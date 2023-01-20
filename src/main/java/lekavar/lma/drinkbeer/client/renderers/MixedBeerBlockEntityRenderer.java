@@ -1,7 +1,7 @@
 package lekavar.lma.drinkbeer.client.renderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import lekavar.lma.drinkbeer.blockentities.MixedBeerBlockEntity;
 import lekavar.lma.drinkbeer.registries.ItemRegistry;
 import lekavar.lma.drinkbeer.utils.beer.Beers;
@@ -31,7 +31,7 @@ public class MixedBeerBlockEntityRenderer implements BlockEntityRenderer<MixedBe
         //Move beer
         matrices.translate(0.5, 0.25, 0.5);
         //Rotate beer
-        matrices.mulPose(Vector3f.YP.rotationDegrees(getRandomAngleByPos(pos)));
+        matrices.mulPose(Axis.YP.rotationDegrees(getRandomAngleByPos(pos)));
         //Get light at the beer block
         int lightAbove = LevelRenderer.getLightColor(blockEntity.getLevel(), blockEntity.getBlockPos().above());
         //Render beer

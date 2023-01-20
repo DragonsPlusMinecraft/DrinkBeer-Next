@@ -21,7 +21,7 @@ import java.util.List;
 
 public class SpiceBlockItem extends BlockItem {
     public SpiceBlockItem(Block block, @Nullable MobEffectInstance statusEffectInstance, int hunger) {
-        super(block, new Item.Properties().tab(ModCreativeTab.GENERAL).stacksTo(64)
+        super(block, new Item.Properties().stacksTo(64)
                 .food(statusEffectInstance != null
                         ? new FoodProperties.Builder().nutrition(hunger).effect(statusEffectInstance, 1).alwaysEat().build()
                         : new FoodProperties.Builder().nutrition(hunger).alwaysEat().build())
