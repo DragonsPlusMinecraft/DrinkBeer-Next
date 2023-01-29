@@ -7,6 +7,7 @@ import lekavar.lma.drinkbeer.utils.beer.Beers;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Flavors;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
 import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.LivingEntity;
@@ -120,6 +121,10 @@ public class MixedBeerBlockItem extends BeerBlockItem {
         else {
             return super.canPlace(context, state);
         }
+    }
+
+    public static int getBeerId(ItemStack itemStack){
+        return itemStack.getOrCreateTagElement("BlockEntityTag").getCompound("MixedBeer").getInt("beerId");
     }
 
     @Override

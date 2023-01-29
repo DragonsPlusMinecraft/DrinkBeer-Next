@@ -1,6 +1,7 @@
 package lekavar.lma.drinkbeer.utils.beer;
 
 // import lekavar.lma.drinkbeer.recipes.BeerRecipe;
+import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
 import lekavar.lma.drinkbeer.registries.ItemRegistry;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;

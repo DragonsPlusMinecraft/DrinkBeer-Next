@@ -24,7 +24,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +66,7 @@ public class BartendingTableBlockEntity extends BlockEntity {
         ItemStack beerItem = inv.getItem(0);
         if(beerItem.isEmpty())
             beerItem = inv.getItem(1);
-        var beerId = Beers.byItem(beerItem.getItem()).getId();
+        var beerId = beerItem.getItem() instanceof MixedBeerBlockItem? MixedBeerBlockItem.getBeerId(beerItem) :Beers.byItem(beerItem.getItem()).getId();
         var spiceList = MixedBeerManager.getSpiceList(beerItem);
         spiceList.add(Spices.byItem(itemStack.getItem()).getId());
         ItemStack flavoredBeer = MixedBeerManager.genMixedBeerItemStack(beerId, spiceList);
