@@ -95,7 +95,7 @@ public class BartendingTableBlock extends BaseEntityBlock {
                                 ItemEntity itementity = player.drop(tryTake, false);
                                 if (itementity != null) {
                                     itementity.setNoPickUpDelay();
-                                    itementity.setOwner(player.getUUID());
+                                    itementity.setThrower(player.getUUID());
                                 }
                             }
                         }

@@ -15,6 +15,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -75,7 +76,7 @@ public class JEIBrewingRecipe implements IRecipeCategory<BrewingRecipe> {
         slotBuilder.addIngredients(ingredients.get(3));
 
         slotBuilder = builder.addSlot(RecipeIngredientRole.OUTPUT,128, 24);
-        slotBuilder.addItemStack(recipe.getResultItem());
+        slotBuilder.addItemStack(recipe.getResultItemNoRegistryAccess());
 
         builder.moveRecipeTransferButton(156, 50);
     }

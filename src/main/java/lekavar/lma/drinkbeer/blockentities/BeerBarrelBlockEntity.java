@@ -167,9 +167,9 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     private void setResult(BrewingRecipe recipe) {
-        var result = recipe.assemble(brewingInventory);
+        var result = recipe.assemble(brewingInventory,level.registryAccess());
         if(!ItemStack.matches(result,brewingInventory.getItem(5))){
-            brewingInventory.setItem(5, recipe.assemble(brewingInventory));
+            brewingInventory.setItem(5, recipe.assemble(brewingInventory,level.registryAccess()));
             remainingBrewTime = recipe.getBrewingTime();
             markDirty();
         }

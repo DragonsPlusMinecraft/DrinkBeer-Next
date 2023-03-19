@@ -46,7 +46,7 @@ public class BeerBarrelComponentProvider implements IBlockComponentProvider, ISe
             List<BrewingRecipe> recipes = level.getRecipeManager().getAllRecipesFor(RecipeRegistry.RECIPE_TYPE_BREWING.get());
             BrewingRecipe recipe = null;
             for (BrewingRecipe candidate : recipes) {
-                if (ItemStackHelper.isSameItem(output, candidate.getResultItem()) &&
+                if (ItemStackHelper.isSameItem(output, candidate.getResultItem(level.registryAccess())) &&
                         timeRemaining < candidate.getBrewingTime())
                 {
                     recipe = candidate;

@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lekavar.lma.drinkbeer.registries.RecipeRegistry;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -15,6 +16,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -72,19 +74,19 @@ public class BrewingRecipe implements Recipe<IBrewingInventory> {
         return testTarget.isEmpty();
     }
 
+    /**
+     * Returns an Item that is the result of this recipe
+     */
+    @Override
+    public ItemStack assemble(@NotNull IBrewingInventory brewingInventory, @NotNull RegistryAccess registryAccess) {
+        return result.copy();
+    }
+
     private int getLatestMatched(List<Ingredient> testTarget, ItemStack tested) {
         for (int i = 0; i < testTarget.size(); i++) {
             if (testTarget.get(i).test(tested)) return i;
         }
         return -1;
-    }
-
-    /**
-     * Returns an Item that is the result of this recipe
-     */
-    @Override
-    public ItemStack assemble(IBrewingInventory inventory) {
-        return result.copy();
     }
 
     // Can Craft at any dimension
@@ -93,14 +95,20 @@ public class BrewingRecipe implements Recipe<IBrewingInventory> {
         return true;
     }
 
-
     /**
      * Get the result of this recipe, usually for display purposes (e.g. recipe book).
      * If your recipe has more than one possible result (e.g. it's dynamic and depends on its inputs),
      * then return an empty stack.
      */
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(@NotNull RegistryAccess registryAccess) {
+        //For Safety, I use #copy
+        return result.copy();
+    }
+
+    // For JEI Addon.
+    // See JEIBrewingRecipe#setRecipe
+    public ItemStack getResultItemNoRegistryAccess() {
         //For Safety, I use #copy
         return result.copy();
     }

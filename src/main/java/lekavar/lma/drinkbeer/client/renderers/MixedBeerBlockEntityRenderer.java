@@ -8,17 +8,15 @@ import lekavar.lma.drinkbeer.utils.beer.Beers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class MixedBeerBlockEntityRenderer implements BlockEntityRenderer<MixedBeerBlockEntity> {
-    public MixedBeerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
-
-    }
+    public MixedBeerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
     public void render(MixedBeerBlockEntity blockEntity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
@@ -35,7 +33,7 @@ public class MixedBeerBlockEntityRenderer implements BlockEntityRenderer<MixedBe
         //Get light at the beer block
         int lightAbove = LevelRenderer.getLightColor(blockEntity.getLevel(), blockEntity.getBlockPos().above());
         //Render beer
-        Minecraft.getInstance().getItemRenderer().renderStatic(beerStack, ItemTransforms.TransformType.GROUND ,lightAbove, overlay,matrices,vertexConsumers,0);
+        Minecraft.getInstance().getItemRenderer().renderStatic(beerStack, ItemDisplayContext.GROUND ,lightAbove, overlay,matrices,vertexConsumers,blockEntity.getLevel(),0);
 
         matrices.popPose();
     }

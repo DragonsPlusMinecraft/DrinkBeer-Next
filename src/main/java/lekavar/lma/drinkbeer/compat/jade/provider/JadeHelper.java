@@ -8,6 +8,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 import snownee.jade.Jade;
 import snownee.jade.api.ITooltip;
+import snownee.jade.api.fluid.JadeFluidObject;
 import snownee.jade.api.ui.*;
 import snownee.jade.impl.Tooltip;
 import snownee.jade.impl.ui.*;
@@ -358,13 +359,13 @@ public class JadeHelper {
         }
 
         @Override
-        public IElement fluid(FluidStack fluidStack) {
+        public IElement fluid(JadeFluidObject jadeFluidObject) {
             IElement ret;
             if (helper != null) {
-                ret = helper.fluid(fluidStack);
+                ret = helper.fluid(jadeFluidObject);
             }
             else {
-                ret = new FluidStackElement(fluidStack);
+                ret = new FluidStackElement(jadeFluidObject);
             }
             return track(ret);
         }

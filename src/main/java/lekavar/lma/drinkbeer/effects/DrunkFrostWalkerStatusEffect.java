@@ -1,15 +1,13 @@
 package lekavar.lma.drinkbeer.effects;
 
-import lekavar.lma.drinkbeer.registries.MobEffectRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.item.enchantment.FrostWalkerEnchantment;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
@@ -23,14 +21,14 @@ public class DrunkFrostWalkerStatusEffect extends MobEffect {
     }
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
+    public void applyEffectTick(@NotNull LivingEntity entity, int amplifier) {
         if (entity instanceof Player) {
-            FrostWalkerEnchantment.onEntityMoved(entity, entity.level, new BlockPos(entity.position()), 1);
+            FrostWalkerEnchantment.onEntityMoved(entity, entity.level, BlockPos.containing(entity.position()), 1);
         }
     }
 
     @Override
-    public void addAttributeModifiers(LivingEntity entity, AttributeMap attributes, int amplifier) {
+    public void addAttributeModifiers(@NotNull LivingEntity entity, @NotNull AttributeMap attributes, int amplifier) {
         DrunkStatusEffect.addStatusEffect(entity);
     }
 }

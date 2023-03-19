@@ -108,12 +108,13 @@ dependencies {
     // Alcocraft has crashing issue. See issue https://github.com/hadrus/Alcocraft/issues/10.
     //implementation fg.deobf("curse.maven:alcocraft-${alcocraft_project_id}:${alcocraft_file_id}")
 
-    // 2023.1.20 JEI 1.19.3 is not in maven
+    // 2023.3.19 JEI 1.19.4 is not in maven
+    // There is no 1.19.4 version yet
     //compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     //compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     //implementation fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
     // temporary solution
-    implementation fg.deobf("curse.maven:jei-238222:4354617")
+    implementation fg.deobf("curse.maven:jei-238222:4434399") // 1.19.3 latest
 
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 }
