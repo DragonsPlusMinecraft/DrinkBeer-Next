@@ -55,7 +55,7 @@ public class ModCreativeTab {
         );
         event.registerCreativeModeTab(new ResourceLocation(DrinkBeer.MOD_ID, "beer"), builder ->
                 // Set name of tab to display
-                builder.title(Component.translatable("item_group.drinkbeer.beer"))
+                builder.title(Component.translatable("itemGroup.drinkbeer.beer"))
                         // Set icon of creative tab
                         .icon(() -> new ItemStack(BlockRegistry.BEER_BARREL.get()))
                         // Add default items to tab
