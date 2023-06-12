@@ -6,11 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static lekavar.lma.drinkbeer.DrinkBeer.*;
 import static lekavar.lma.drinkbeer.registries.ItemRegistry.*;
-import static lekavar.lma.drinkbeer.utils.tradebox.Good.*;
+import static lekavar.lma.drinkbeer.utils.tradebox.Good.FROM;
+import static lekavar.lma.drinkbeer.utils.tradebox.Good.TO;
 import static lekavar.lma.drinkbeer.utils.tradebox.GoodsRarity.*;
-import static lekavar.lma.drinkbeer.utils.tradebox.Locations.*;
+import static lekavar.lma.drinkbeer.utils.tradebox.Locations.NORTHON;
+import static lekavar.lma.drinkbeer.utils.tradebox.Locations.TWIGVALLEY;
 import static lekavar.lma.drinkbeer.utils.tradebox.Residents.*;
 
 public enum Goods {

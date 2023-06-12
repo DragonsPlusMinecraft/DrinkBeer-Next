@@ -16,7 +16,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class MixedBeerBlockEntityRenderer implements BlockEntityRenderer<MixedBeerBlockEntity> {
-    public MixedBeerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
+    public MixedBeerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+    }
 
     @Override
     public void render(MixedBeerBlockEntity blockEntity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
@@ -33,7 +34,7 @@ public class MixedBeerBlockEntityRenderer implements BlockEntityRenderer<MixedBe
         //Get light at the beer block
         int lightAbove = LevelRenderer.getLightColor(blockEntity.getLevel(), blockEntity.getBlockPos().above());
         //Render beer
-        Minecraft.getInstance().getItemRenderer().renderStatic(beerStack, ItemDisplayContext.GROUND ,lightAbove, overlay,matrices,vertexConsumers,blockEntity.getLevel(),0);
+        Minecraft.getInstance().getItemRenderer().renderStatic(beerStack, ItemDisplayContext.GROUND, lightAbove, overlay, matrices, vertexConsumers, blockEntity.getLevel(), 0);
 
         matrices.popPose();
     }

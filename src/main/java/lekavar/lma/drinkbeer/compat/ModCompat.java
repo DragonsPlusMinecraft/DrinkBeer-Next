@@ -7,7 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.fml.ModList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class ModCompat{
+public class ModCompat {
     // TODO, How to trigger it?
     public static final String ALCOCRAFT = "alcocraft";
     private static final List<Supplier<Supplier<IRecipeInjector>>> RECIPE_INJECTS = new ArrayList<>();
@@ -26,7 +25,7 @@ public class ModCompat{
         // Alcocraft has crashing issue. See issue https://github.com/hadrus/Alcocraft/issues/10.
         // if(ModList.get().isLoaded(ALCOCRAFT)) RECIPE_INJECTS.add(()->AlcocraftCompat::new);
 
-        if(!RECIPE_INJECTS.isEmpty()){
+        if (!RECIPE_INJECTS.isEmpty()) {
             var byNameBuilder = ImmutableMap.<ResourceLocation, Recipe<?>>builder();
             byNameBuilder.putAll(accessor.getByName());
 
@@ -34,7 +33,7 @@ public class ModCompat{
 
             DrinkBeer.LOGGER.debug("Recipes before: {}", accessor.getByName().size());
 
-            for(var recipeInjector: RECIPE_INJECTS){
+            for (var recipeInjector : RECIPE_INJECTS) {
                 recipeInjector.get().get().injectRecipes(accessor.getByName(), byNameBuilder::put);
             }
 
@@ -48,7 +47,7 @@ public class ModCompat{
 
             accessor.setByName(newByName);
             accessor.setRecipes(recipesBuilder.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey,(e)-> e.getValue().build())));
+                    .collect(Collectors.toMap(Map.Entry::getKey, (e) -> e.getValue().build())));
 
             RECIPE_INJECTS.clear();
         }

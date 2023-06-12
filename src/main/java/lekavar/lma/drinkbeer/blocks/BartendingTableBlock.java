@@ -1,24 +1,18 @@
 package lekavar.lma.drinkbeer.blocks;
 
 import lekavar.lma.drinkbeer.blockentities.BartendingTableBlockEntity;
-import lekavar.lma.drinkbeer.blockentities.BeerBarrelBlockEntity;
 import lekavar.lma.drinkbeer.items.BeerMugItem;
 import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
 import lekavar.lma.drinkbeer.items.SpiceBlockItem;
-import lekavar.lma.drinkbeer.registries.ItemRegistry;
 import lekavar.lma.drinkbeer.registries.SoundEventRegistry;
-import lekavar.lma.drinkbeer.utils.ModCreativeTab;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -27,8 +21,6 @@ import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -36,11 +28,10 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -52,7 +43,7 @@ public class BartendingTableBlock extends BaseEntityBlock {
     public final static VoxelShape SHAPE = Block.box(0, 0.01, 0, 16, 16, 16);
 
     public BartendingTableBlock() {
-        super(BlockBehaviour.Properties.of(Material.WOOD).strength(2.0f).noOcclusion());
+        super(BlockBehaviour.Properties.of().ignitedByLava().mapColor(MapColor.WOOD).strength(2.0f).noOcclusion());
         this.registerDefaultState(this.defaultBlockState()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(OPENED, true)
@@ -81,15 +72,15 @@ public class BartendingTableBlock extends BaseEntityBlock {
             ItemStack itemStack = player.getItemInHand(hand);
             BlockEntity blockentity = world.getBlockEntity(pos);
             if (blockentity instanceof BartendingTableBlockEntity bartendingTableBlockEntity) {
-                if (itemStack.isEmpty()){
-                    if(player.isShiftKeyDown()){
+                if (itemStack.isEmpty()) {
+                    if (player.isShiftKeyDown()) {
                         boolean currentOpenedState = state.getValue(OPENED);
                         world.playSound(null, pos, currentOpenedState ? SoundEventRegistry.BARTENDING_TABLE_CLOSE.get() : SoundEventRegistry.BARTENDING_TABLE_OPEN.get(), SoundSource.BLOCKS, 1f, 1f);
                         world.setBlockAndUpdate(pos, state.setValue(OPENED, !currentOpenedState));
                         return InteractionResult.CONSUME;
                     } else {
                         var tryTake = bartendingTableBlockEntity.takeBeer(false);
-                        if(!tryTake.isEmpty()){
+                        if (!tryTake.isEmpty()) {
                             boolean flag = player.getInventory().add(tryTake);
                             if (!flag) {
                                 ItemEntity itementity = player.drop(tryTake, false);
@@ -100,27 +91,28 @@ public class BartendingTableBlock extends BaseEntityBlock {
                             }
                         }
                     }
-                } else{
+                } else {
                     if (itemStack.getItem() instanceof MixedBeerBlockItem || itemStack.getItem() instanceof BeerMugItem) {
                         var placeIn = itemStack.copy();
                         placeIn.setCount(1);
                         var result = bartendingTableBlockEntity.placeBeer(placeIn);
-                        if(result){
+                        if (result) {
                             world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                            if(!player.getAbilities().instabuild)
+                            if (!player.getAbilities().instabuild)
                                 itemStack.shrink(1);
                         }
                         return InteractionResult.CONSUME;
-                    } else if (itemStack.getItem() instanceof SpiceBlockItem){
+                    } else if (itemStack.getItem() instanceof SpiceBlockItem) {
                         var placeIn = itemStack.copy();
                         placeIn.setCount(1);
                         var result = bartendingTableBlockEntity.putSpice(placeIn);
-                        if(result){
+                        if (result) {
                             world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                            if(!player.getAbilities().instabuild)
+                            if (!player.getAbilities().instabuild)
                                 itemStack.shrink(1);
                         }
-                    } return InteractionResult.CONSUME;
+                    }
+                    return InteractionResult.CONSUME;
                 }
             }
         }

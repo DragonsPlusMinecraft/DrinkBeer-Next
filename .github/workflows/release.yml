@@ -5,9 +5,9 @@ permissions:
   contents: write
 
 env:
-  MINECRAFT_VERSION: 1.19.4
+  MINECRAFT_VERSION: '1.20'
   JAVA_VERSION: 17
-  VERSION: 1.0.3
+  VERSION: 1.0.4
 
 jobs:
   release:
@@ -44,7 +44,7 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           # Config
-          name: "Drink Beer Refill ${{ env.MINECRAFT_VERSION }}-${{ env.VERSION }}"
+          name: "Drink Beer Refill ${{ env.VERSION }} for ${{ env.MINECRAFT_VERSION }}"
           version: ${{ env.VERSION }}
           version-type: release
           changelog-file: changelog/${{ env.VERSION }}.md

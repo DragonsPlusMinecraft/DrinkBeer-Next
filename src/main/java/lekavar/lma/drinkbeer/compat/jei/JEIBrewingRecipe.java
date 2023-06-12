@@ -1,31 +1,32 @@
 package lekavar.lma.drinkbeer.compat.jei;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import lekavar.lma.drinkbeer.DrinkBeer;
 import lekavar.lma.drinkbeer.recipes.BrewingRecipe;
 import lekavar.lma.drinkbeer.registries.ItemRegistry;
-import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.helpers.IGuiHelper;;
+import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.*;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
 
+;
+
 public class JEIBrewingRecipe implements IRecipeCategory<BrewingRecipe> {
-    public static final RecipeType<BrewingRecipe> TYPE = RecipeType.create(DrinkBeer.MOD_ID,"brewing", BrewingRecipe.class);
+    public static final RecipeType<BrewingRecipe> TYPE = RecipeType.create(DrinkBeer.MOD_ID, "brewing", BrewingRecipe.class);
     private static final String DRINK_BEER_YELLOW = "#F4D223";
     private static final String NIGHT_HOWL_CUP_HEX_COLOR = "#C69B82";
     private static final String PUMPKIN_DRINK_CUP_HEX_COLOR = "#AC6132";
@@ -63,34 +64,34 @@ public class JEIBrewingRecipe implements IRecipeCategory<BrewingRecipe> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, BrewingRecipe recipe, IFocusGroup focuses) {
         var ingredients = recipe.getIngredients();
-        var slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT,28,16);
+        var slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, 28, 16);
         slotBuilder.addIngredients(ingredients.get(0));
 
-        slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT,46, 16);
+        slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, 46, 16);
         slotBuilder.addIngredients(ingredients.get(1));
 
-        slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT,28, 34);
+        slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, 28, 34);
         slotBuilder.addIngredients(ingredients.get(2));
 
-        slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT,46, 34);
+        slotBuilder = builder.addSlot(RecipeIngredientRole.INPUT, 46, 34);
         slotBuilder.addIngredients(ingredients.get(3));
 
-        slotBuilder = builder.addSlot(RecipeIngredientRole.OUTPUT,128, 24);
+        slotBuilder = builder.addSlot(RecipeIngredientRole.OUTPUT, 128, 24);
         slotBuilder.addItemStack(recipe.getResultItemNoRegistryAccess());
 
         builder.moveRecipeTransferButton(156, 50);
     }
 
     @Override
-    public void draw(BrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack stack, double mouseX, double mouseY) {
+    public void draw(BrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         IDrawable drawable = guiHelper.createDrawableItemStack(recipe.getBeerCup());
-        drawable.draw(stack, 73, 40);
+        drawable.draw(guiGraphics, 73, 40);
     }
 
     @Override
     public List<Component> getTooltipStrings(BrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         List<Component> tooltips = new ArrayList<>();
-        if (!inTransferBottomRange(mouseX, mouseY)){
+        if (!inTransferBottomRange(mouseX, mouseY)) {
             if (inCupSlotRange(mouseX, mouseY)) {
                 tooltips.add(Component.translatable("drinkbeer.jei.tooltip.cup_slot")
                         .setStyle(Style.EMPTY.withColor(TextColor.parseColor(DRINK_BEER_YELLOW))));

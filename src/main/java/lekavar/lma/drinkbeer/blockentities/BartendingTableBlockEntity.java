@@ -36,37 +36,37 @@ public class BartendingTableBlockEntity extends BlockEntity {
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> new BartendingTableInvWrapper(this));
 
     public BartendingTableBlockEntity(BlockPos pos, BlockState state) {
-        super(BlockEntityRegistry.BARTENDING_TABLE_TILEENTITY.get(),pos,state);
+        super(BlockEntityRegistry.BARTENDING_TABLE_TILEENTITY.get(), pos, state);
     }
 
-    public boolean placeBeer(ItemStack itemStack){
-        if(!inv.isEmpty())
+    public boolean placeBeer(ItemStack itemStack) {
+        if (!inv.isEmpty())
             return false;
         Item beerItem = itemStack.getItem();
-        if(!(beerItem instanceof MixedBeerBlockItem) && !(beerItem instanceof BeerMugItem))
+        if (!(beerItem instanceof MixedBeerBlockItem) && !(beerItem instanceof BeerMugItem))
             return false;
         var spiceList = MixedBeerManager.getSpiceList(itemStack);
-        if(spiceList.size()>=3)
+        if (spiceList.size() >= 3)
             return false;
         inv.setItem(0, itemStack);
         markDirty();
         return true;
     }
 
-    public boolean putSpice(ItemStack itemStack){
-        if(!(itemStack.getItem() instanceof SpiceBlockItem))
+    public boolean putSpice(ItemStack itemStack) {
+        if (!(itemStack.getItem() instanceof SpiceBlockItem))
             return false;
-        if(inv.isEmpty())
+        if (inv.isEmpty())
             return false;
-        if(!inv.getItem(1).isEmpty()){
+        if (!inv.getItem(1).isEmpty()) {
             var spiceList = MixedBeerManager.getSpiceList(inv.getItem(1));
-            if(spiceList.size()>=3)
+            if (spiceList.size() >= 3)
                 return false;
         }
         ItemStack beerItem = inv.getItem(0);
-        if(beerItem.isEmpty())
+        if (beerItem.isEmpty())
             beerItem = inv.getItem(1);
-        var beerId = beerItem.getItem() instanceof MixedBeerBlockItem? MixedBeerBlockItem.getBeerId(beerItem) :Beers.byItem(beerItem.getItem()).getId();
+        var beerId = beerItem.getItem() instanceof MixedBeerBlockItem ? MixedBeerBlockItem.getBeerId(beerItem) : Beers.byItem(beerItem.getItem()).getId();
         var spiceList = MixedBeerManager.getSpiceList(beerItem);
         spiceList.add(Spices.byItem(itemStack.getItem()).getId());
         ItemStack flavoredBeer = MixedBeerManager.genMixedBeerItemStack(beerId, spiceList);
@@ -76,11 +76,11 @@ public class BartendingTableBlockEntity extends BlockEntity {
         return true;
     }
 
-    public ItemStack takeBeer(boolean simulate){
+    public ItemStack takeBeer(boolean simulate) {
         var ret = inv.getItem(0).copy();
-        if(ret.isEmpty())
+        if (ret.isEmpty())
             ret = inv.getItem(1).copy();
-        if(!simulate && !ret.isEmpty()){
+        if (!simulate && !ret.isEmpty()) {
             inv.clearContent();
             markDirty();
         }
@@ -91,7 +91,7 @@ public class BartendingTableBlockEntity extends BlockEntity {
     public void markDirty() {
         var pos = getBlockPos();
         var bs = level.getBlockState(pos);
-        level.sendBlockUpdated(pos,bs,bs, Block.UPDATE_CLIENTS);
+        level.sendBlockUpdated(pos, bs, bs, Block.UPDATE_CLIENTS);
         setChanged();
     }
 
@@ -117,8 +117,8 @@ public class BartendingTableBlockEntity extends BlockEntity {
     @Override
     public void handleUpdateTag(CompoundTag tag) {
         super.handleUpdateTag(tag);
-        inv.setItem(0,ItemStack.of((CompoundTag) tag.get("input")));
-        inv.setItem(1,ItemStack.of((CompoundTag) tag.get("output")));
+        inv.setItem(0, ItemStack.of((CompoundTag) tag.get("input")));
+        inv.setItem(1, ItemStack.of((CompoundTag) tag.get("output")));
     }
 
     @Override
@@ -131,8 +131,8 @@ public class BartendingTableBlockEntity extends BlockEntity {
     @Override
     public void load(@Nonnull CompoundTag tag) {
         super.load(tag);
-        inv.setItem(0,ItemStack.of((CompoundTag) tag.get("input")));
-        inv.setItem(1,ItemStack.of((CompoundTag) tag.get("output")));
+        inv.setItem(0, ItemStack.of((CompoundTag) tag.get("input")));
+        inv.setItem(1, ItemStack.of((CompoundTag) tag.get("output")));
     }
 
     @Override
@@ -144,12 +144,12 @@ public class BartendingTableBlockEntity extends BlockEntity {
     @NotNull
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == ForgeCapabilities.ITEM_HANDLER)
+        if (cap == ForgeCapabilities.ITEM_HANDLER)
             return handler.cast();
         return super.getCapability(cap, side);
     }
 
-    static class OneItemContainer extends SimpleContainer{
+    static class OneItemContainer extends SimpleContainer {
         public OneItemContainer(int pSize) {
             super(pSize);
         }
@@ -160,9 +160,10 @@ public class BartendingTableBlockEntity extends BlockEntity {
         }
     }
 
-    static class BartendingTableInvWrapper extends InvWrapper{
+    static class BartendingTableInvWrapper extends InvWrapper {
         Container inv;
         BartendingTableBlockEntity be;
+
         public BartendingTableInvWrapper(BartendingTableBlockEntity be) {
             super(be.inv);
             this.inv = be.inv;
@@ -178,36 +179,36 @@ public class BartendingTableBlockEntity extends BlockEntity {
 
         @Override
         public @NotNull ItemStack getStackInSlot(int slot) {
-            if(slot==2) return ItemStack.EMPTY;
+            if (slot == 2) return ItemStack.EMPTY;
             return super.getStackInSlot(slot);
         }
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if(slot == 0 && stack.getItem() instanceof MixedBeerBlockItem || stack.getItem()  instanceof BeerMugItem){
-                if(!inv.isEmpty())
+            if (slot == 0 && stack.getItem() instanceof MixedBeerBlockItem || stack.getItem() instanceof BeerMugItem) {
+                if (!inv.isEmpty())
                     return stack;
                 var spiceList = MixedBeerManager.getSpiceList(stack);
-                if(spiceList.size()>=3)
+                if (spiceList.size() >= 3)
                     return stack;
                 var ret = stack.copy();
-                if(!simulate){
+                if (!simulate) {
                     be.placeBeer(stack);
                 }
                 ret.shrink(1);
                 return ret;
             }
             // Do not
-            if(slot == 2 && stack.getItem() instanceof SpiceBlockItem) {
-                if(inv.isEmpty())
+            if (slot == 2 && stack.getItem() instanceof SpiceBlockItem) {
+                if (inv.isEmpty())
                     return stack;
-                if(!inv.getItem(1).isEmpty()){
+                if (!inv.getItem(1).isEmpty()) {
                     var spiceList = MixedBeerManager.getSpiceList(inv.getItem(1));
-                    if(spiceList.size()>=3)
+                    if (spiceList.size() >= 3)
                         return stack;
                 }
                 var ret = stack.copy();
-                if(!simulate){
+                if (!simulate) {
                     be.putSpice(stack);
                 }
                 ret.shrink(1);
@@ -218,35 +219,35 @@ public class BartendingTableBlockEntity extends BlockEntity {
 
         @Override
         public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            if(slot == 0 || slot == 2)
+            if (slot == 0 || slot == 2)
                 return ItemStack.EMPTY;
-            if(!inv.getItem(1).isEmpty())
+            if (!inv.getItem(1).isEmpty())
                 return be.takeBeer(simulate);
             return ItemStack.EMPTY;
         }
 
         @Override
         public void setStackInSlot(int slot, @NotNull ItemStack stack) {
-            if(slot==2) return;
+            if (slot == 2) return;
             super.setStackInSlot(slot, stack);
         }
 
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            if(slot==0 && stack.getItem() instanceof MixedBeerBlockItem || stack.getItem()  instanceof BeerMugItem){
-                if(!inv.isEmpty())
+            if (slot == 0 && stack.getItem() instanceof MixedBeerBlockItem || stack.getItem() instanceof BeerMugItem) {
+                if (!inv.isEmpty())
                     return false;
                 var spiceList = MixedBeerManager.getSpiceList(stack);
-                if(spiceList.size()>=3)
+                if (spiceList.size() >= 3)
                     return false;
                 return true;
             }
-            if(slot==2 && stack.getItem() instanceof SpiceBlockItem) {
-                if(inv.isEmpty())
+            if (slot == 2 && stack.getItem() instanceof SpiceBlockItem) {
+                if (inv.isEmpty())
                     return false;
-                if(!inv.getItem(1).isEmpty()){
+                if (!inv.getItem(1).isEmpty()) {
                     var spiceList = MixedBeerManager.getSpiceList(inv.getItem(1));
-                    if(spiceList.size()>=3)
+                    if (spiceList.size() >= 3)
                         return false;
                 }
                 return true;

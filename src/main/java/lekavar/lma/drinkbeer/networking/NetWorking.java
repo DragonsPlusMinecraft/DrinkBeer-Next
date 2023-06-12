@@ -29,7 +29,7 @@ public class NetWorking {
                     if (screenContainer instanceof TradeBoxMenu) {
                         BlockPos pos = msg.getPos();
                         context.enqueueWork(() -> {
-                            TradeBoxBlockEntity tradeboxEntity = (TradeBoxBlockEntity) player.level.getBlockEntity(pos);
+                            TradeBoxBlockEntity tradeboxEntity = (TradeBoxBlockEntity) player.level().getBlockEntity(pos);
                             tradeboxEntity.screenHandler.setTradeboxCooling();
                         });
                     }
@@ -38,7 +38,7 @@ public class NetWorking {
 
     public static void sendRefreshTradebox(BlockPos pos) {
         ChannelHelper.DEFAULT_CHANNEL.sendToServer(
-            new RefreshTradeBoxMessage(pos)
+                new RefreshTradeBoxMessage(pos)
         );
     }
 }

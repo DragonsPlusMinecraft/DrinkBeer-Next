@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public enum Locations {
-    EMPTY(0,"empty"),
+    EMPTY(0, "empty"),
     NORTHON(1, "northon"),
     TWIGVALLEY(2, "twigvalley");
 
@@ -38,15 +38,15 @@ public enum Locations {
         return EMPTY_LOCATION;
     }
 
-    public static List<Locations> getList(){
+    public static List<Locations> getList() {
         return Arrays.stream(values()).collect(Collectors.toList());
     }
 
-    public static int size(){
+    public static int size() {
         return values().length;
     }
 
-    public static int genRandomLocationId(){
+    public static int genRandomLocationId() {
         return new Random().nextInt(Locations.size() - 1) + 1;
     }
 }

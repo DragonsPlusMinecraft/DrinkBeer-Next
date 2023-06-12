@@ -2,12 +2,10 @@ package lekavar.lma.drinkbeer.items;
 
 import lekavar.lma.drinkbeer.managers.MixedBeerManager;
 import lekavar.lma.drinkbeer.managers.SpiceAndFlavorManager;
-import lekavar.lma.drinkbeer.utils.ModCreativeTab;
 import lekavar.lma.drinkbeer.utils.beer.Beers;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Flavors;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.LivingEntity;
@@ -72,8 +70,7 @@ public class MixedBeerBlockItem extends BeerBlockItem {
         //Flavor combination(if exists)
         Flavors combinedFlavor = SpiceAndFlavorManager.getCombinedFlavor(spiceList);
         if (combinedFlavor != null) {
-            tooltip.add(Component.translatable("")
-                    .append("\"")
+            tooltip.add(Component.literal("\"")
                     .append(Component.translatable(SpiceAndFlavorManager.getFlavorTranslationKey(combinedFlavor.getId())))
                     .append("\"")
                     .setStyle(Style.EMPTY.applyFormat(ChatFormatting.DARK_RED)));
@@ -89,14 +86,14 @@ public class MixedBeerBlockItem extends BeerBlockItem {
     public Component getMixedBeerName(ItemStack stack) {
         int beerId = MixedBeerManager.getBeerId(stack);
         Item beerItem = Beers.byId(beerId).getBeerItem();
-        String beerName = beerId > Beers.EMPTY_BEER_ID ? "block.drinkbeer." + beerItem.toString(): "block.drinkbeer.empty_beer_mug";
+        String beerName = beerId > Beers.EMPTY_BEER_ID ? "block.drinkbeer." + beerItem.toString() : "block.drinkbeer.empty_beer_mug";
         Component name = Component.translatable(beerName).append(Component.translatable("block.drinkbeer." + MixedBeerManager.getMixedBeerTranslationKey())).setStyle(Style.EMPTY.applyFormat(ChatFormatting.YELLOW));
         return name;
     }
 
 
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-        if(world != null && world.isClientSide()) {
+        if (world != null && world.isClientSide()) {
             appendMixedBeerTooltip(stack, tooltip);
         }
     }
@@ -123,14 +120,14 @@ public class MixedBeerBlockItem extends BeerBlockItem {
         }
     }
 
-    public static int getBeerId(ItemStack itemStack){
+    public static int getBeerId(ItemStack itemStack) {
         return itemStack.getOrCreateTagElement("BlockEntityTag").getCompound("MixedBeer").getInt("beerId");
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level world, LivingEntity user) {
         //Apply mixed beer
-        if(!world.isClientSide()) {
+        if (!world.isClientSide()) {
             MixedBeerManager.useMixedBeer(stack, world, user);
         }
         //Give empty mug back

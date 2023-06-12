@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public enum FlavorCombinations {
-    SOOOOO_SPICY(Flavors.SOOOOO_SPICY, ()-> new FlavorCombination()
+    SOOOOO_SPICY(Flavors.SOOOOO_SPICY, () -> new FlavorCombination()
             .addFlavorCombination(true, Flavors.SPICY, Flavors.SPICY, Flavors.SPICY)),
-    FURY_OF_THE_STORM(Flavors.THE_FALL_OF_THE_GIANT, ()-> new FlavorCombination()
+    FURY_OF_THE_STORM(Flavors.THE_FALL_OF_THE_GIANT, () -> new FlavorCombination()
             .addFlavorCombination(true, Flavors.STORMY, Flavors.STORMY, Flavors.STORMY)),
-    CLOYING(Flavors.CLOYING, ()-> new FlavorCombination()
+    CLOYING(Flavors.CLOYING, () -> new FlavorCombination()
             .addFlavorCombination(true, Flavors.SWEET, Flavors.SWEET, Flavors.SWEET));
 
     private final Flavors combinedFlavor;

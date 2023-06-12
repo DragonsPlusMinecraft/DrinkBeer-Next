@@ -5,24 +5,21 @@ import lekavar.lma.drinkbeer.blockentities.TradeBoxBlockEntity;
 import lekavar.lma.drinkbeer.managers.TradeBoxManager;
 import lekavar.lma.drinkbeer.utils.Convert;
 import lekavar.lma.drinkbeer.utils.ItemStackHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.ItemStackHandler;
 import snownee.jade.api.*;
 import snownee.jade.api.config.IPluginConfig;
 import snownee.jade.api.ui.IElement;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.*;
-import net.minecraftforge.items.ItemStackHandler;
 import snownee.jade.api.ui.IElementHelper;
 import snownee.jade.impl.ui.ProgressArrowElement;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TradeBoxComponentProvider implements IBlockComponentProvider, IServerDataProvider<BlockEntity> {
+public class TradeBoxComponentProvider implements IBlockComponentProvider, IServerDataProvider<BlockAccessor> {
     public static TradeBoxComponentProvider INSTANCE = new TradeBoxComponentProvider();
     public static final String KEY_COOLING_TIME = "coolingTime";
     public static final String KEY_GOODS_FROM = "goodsFrom";
@@ -62,8 +59,7 @@ public class TradeBoxComponentProvider implements IBlockComponentProvider, IServ
             JadeHelper.placeItems(grids, outputs, false);
 
             JadeHelper.addGridsToTooltip(tooltip, grids);
-        }
-        else {
+        } else {
             int maxCoolingTime = coolingTime > TradeBoxManager.COOLING_TIME_ON_REFRESH ?
                     TradeBoxManager.COOLING_TIME_ON_PLACE :
                     TradeBoxManager.COOLING_TIME_ON_REFRESH;
@@ -79,9 +75,10 @@ public class TradeBoxComponentProvider implements IBlockComponentProvider, IServ
      * NOTE: This relies on Jade's default InventoryProvider
      * which will automatically extract trade box's inventory
      * and pass it to client through ServerData["jadeHandler"].
-     *
+     * <p>
      * However, the number of items InventoryProvider will show
      * is limited to @see JadeCommonConfig#inventoryNormalShowAmount.
+     *
      * @see snownee.jade.addon.universal.ItemStorageProvider#append(ITooltip, Accessor, IPluginConfig)
      */
     private List<IElement> getInventoryTooltip(ITooltip tooltip, BlockAccessor accessor) {
@@ -130,22 +127,21 @@ public class TradeBoxComponentProvider implements IBlockComponentProvider, IServ
     }
 
     @Override
-    public void appendServerData(CompoundTag data, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
-        TradeBoxBlockEntity be = (TradeBoxBlockEntity) blockEntity;
-        data.putInt(KEY_COOLING_TIME, be.syncData.get(0));
-
-        if (be.syncData.get(3) == TradeBoxBlockEntity.PROCESS_TRADING)
-        {
-            int goodsFromLocNum = getGoodCount(be, 0, MaxGoodCount);
-            int goodsToLocNum = getGoodCount(be, MaxGoodCount, MaxGoodCount);
-
-            data.putInt(KEY_GOODS_FROM, goodsFromLocNum);
-            data.putInt(KEY_GOODS_TO, goodsToLocNum);
-        }
+    public ResourceLocation getUid() {
+        return new ResourceLocation(DrinkBeer.MOD_ID, "trade_box");
     }
 
     @Override
-    public ResourceLocation getUid() {
-        return new ResourceLocation(DrinkBeer.MOD_ID,"trade_box");
+    public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
+        TradeBoxBlockEntity be = (TradeBoxBlockEntity) blockAccessor.getBlockEntity();
+        compoundTag.putInt(KEY_COOLING_TIME, be.syncData.get(0));
+
+        if (be.syncData.get(3) == TradeBoxBlockEntity.PROCESS_TRADING) {
+            int goodsFromLocNum = getGoodCount(be, 0, MaxGoodCount);
+            int goodsToLocNum = getGoodCount(be, MaxGoodCount, MaxGoodCount);
+
+            compoundTag.putInt(KEY_GOODS_FROM, goodsFromLocNum);
+            compoundTag.putInt(KEY_GOODS_TO, goodsToLocNum);
+        }
     }
 }

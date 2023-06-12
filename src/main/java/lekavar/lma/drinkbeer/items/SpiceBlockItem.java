@@ -1,7 +1,6 @@
 package lekavar.lma.drinkbeer.items;
 
 import lekavar.lma.drinkbeer.managers.SpiceAndFlavorManager;
-import lekavar.lma.drinkbeer.utils.ModCreativeTab;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Flavors;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
 import net.minecraft.ChatFormatting;
@@ -30,7 +29,7 @@ public class SpiceBlockItem extends BlockItem {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
-        if(world != null && world.isClientSide()) {
+        if (world != null && world.isClientSide()) {
             //Spice title
             tooltip.add(Component.translatable(SpiceAndFlavorManager.getSpiceToolTipTranslationKey()).setStyle(Style.EMPTY.applyFormat(ChatFormatting.YELLOW)));
             //Flavor title

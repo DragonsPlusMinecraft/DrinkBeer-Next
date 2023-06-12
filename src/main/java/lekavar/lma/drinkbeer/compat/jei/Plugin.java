@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 public class Plugin implements IModPlugin {
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(DrinkBeer.MOD_ID,"jei_plugin");
+        return new ResourceLocation(DrinkBeer.MOD_ID, "jei_plugin");
     }
 
     @Override
@@ -26,12 +26,12 @@ public class Plugin implements IModPlugin {
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        registration.addRecipes(JEIBrewingRecipe.TYPE,Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(RecipeRegistry.RECIPE_TYPE_BREWING.get()));
+        registration.addRecipes(JEIBrewingRecipe.TYPE, Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(RecipeRegistry.RECIPE_TYPE_BREWING.get()));
     }
 
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-        registration.addRecipeTransferHandler(BeerBarrelMenu.class, null,JEIBrewingRecipe.TYPE, 36, 4, 0, 36);
+        registration.addRecipeTransferHandler(BeerBarrelMenu.class, null, JEIBrewingRecipe.TYPE, 36, 4, 0, 36);
     }
 
     @Override

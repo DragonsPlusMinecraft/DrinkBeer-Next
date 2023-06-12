@@ -39,25 +39,25 @@ public class BrewingRecipe implements Recipe<IBrewingInventory> {
     }
 
     @Deprecated
-    public NonNullList<Ingredient> getIngredient(){
+    public NonNullList<Ingredient> getIngredient() {
         NonNullList<Ingredient> result = NonNullList.create();
         result.addAll(input);
         return result;
     }
 
     @Override
-    public NonNullList<Ingredient> getIngredients(){
+    public NonNullList<Ingredient> getIngredients() {
         NonNullList<Ingredient> result = NonNullList.create();
         result.addAll(input);
         return result;
     }
 
     @Deprecated
-    public ItemStack geBeerCup(){
+    public ItemStack geBeerCup() {
         return cup.copy();
     }
 
-    public ItemStack getBeerCup(){
+    public ItemStack getBeerCup() {
         return cup.copy();
     }
 
@@ -65,7 +65,7 @@ public class BrewingRecipe implements Recipe<IBrewingInventory> {
     public boolean matches(IBrewingInventory pContainer, Level pLevel) {
         List<Ingredient> testTarget = Lists.newArrayList(input);
         List<ItemStack> tested = pContainer.getIngredients();
-        if (tested.size()<4) return false;
+        if (tested.size() < 4) return false;
         for (ItemStack itemStack : tested) {
             int i = getLatestMatched(testTarget, itemStack);
             if (i == -1) return false;

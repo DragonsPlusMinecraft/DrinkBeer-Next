@@ -35,8 +35,7 @@ public class MixedBeerComponentProvider implements IBlockComponentProvider {
 
     @Override
     public @Nullable IElement getIcon(BlockAccessor accessor, IPluginConfig config, IElement currentIcon) {
-        if (accessor.getBlockEntity() instanceof MixedBeerBlockEntity mixedBeer)
-        {
+        if (accessor.getBlockEntity() instanceof MixedBeerBlockEntity mixedBeer) {
             return ItemStackElement.of(Beers.byId(mixedBeer.getBeerId()).getBeerItem().getDefaultInstance());
         }
         return IBlockComponentProvider.super.getIcon(accessor, config, currentIcon);
@@ -44,19 +43,19 @@ public class MixedBeerComponentProvider implements IBlockComponentProvider {
 
     @Override
     public void appendTooltip(ITooltip tooltip, BlockAccessor accessor, IPluginConfig config) {
-        if(!(accessor.getBlock() instanceof MixedBeerBlock &&
+        if (!(accessor.getBlock() instanceof MixedBeerBlock &&
                 accessor.getBlockEntity() instanceof MixedBeerBlockEntity mxBeer))
             return;
         MixedBeerBlockItem MIXED_BEER = (MixedBeerBlockItem) ItemRegistry.MIXED_BEER.get();
         Component name = MIXED_BEER.getMixedBeerName(mxBeer.getPickStack());
         if (name != null) {
             @SuppressWarnings("all")
-            IWailaConfig wailaConfig = config.getWailaConfig();
+            IWailaConfig wailaConfig = IWailaConfig.get();
             tooltip.clear();
             tooltip.add(name.copy().setStyle(Style.EMPTY.withColor(ChatFormatting.LIGHT_PURPLE)));
         }
 
-        if(!(accessor.getBlock() instanceof MixedBeerBlock &&
+        if (!(accessor.getBlock() instanceof MixedBeerBlock &&
                 accessor.getBlockEntity() instanceof MixedBeerBlockEntity mixedBeer))
             return;
 
@@ -91,6 +90,6 @@ public class MixedBeerComponentProvider implements IBlockComponentProvider {
 
     @Override
     public ResourceLocation getUid() {
-        return new ResourceLocation(DrinkBeer.MOD_ID,"mixed_beer");
+        return new ResourceLocation(DrinkBeer.MOD_ID, "mixed_beer");
     }
 }

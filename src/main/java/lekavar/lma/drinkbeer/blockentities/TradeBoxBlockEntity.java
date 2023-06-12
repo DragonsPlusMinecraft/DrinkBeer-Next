@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -35,11 +34,11 @@ public class TradeBoxBlockEntity extends BaseContainerBlockEntity {
     public static final int PROCESS_TRADING = 1;
 
     public TradeBoxBlockEntity(BlockPos pos, BlockState state) {
-        super(BlockEntityRegistry.TRADE_BOX_TILEENTITY.get(),pos,state);
+        super(BlockEntityRegistry.TRADE_BOX_TILEENTITY.get(), pos, state);
     }
 
     public TradeBoxBlockEntity(int coolingTime, BlockPos pos, BlockState state) {
-        super(BlockEntityRegistry.TRADE_BOX_TILEENTITY.get(),pos,state);
+        super(BlockEntityRegistry.TRADE_BOX_TILEENTITY.get(), pos, state);
 
         this.coolingTime = TradeBoxManager.COOLING_TIME_ON_PLACE;
         this.locationId = Locations.EMPTY_LOCATION.getId();

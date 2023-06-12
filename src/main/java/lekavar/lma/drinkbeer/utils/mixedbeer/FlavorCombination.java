@@ -16,22 +16,21 @@ public class FlavorCombination {
         return flavorCombinationList;
     }
 
-    public FlavorCombination addFlavorCombination(Flavors... flavors){
-        return addFlavorCombination(false,flavors);
+    public FlavorCombination addFlavorCombination(Flavors... flavors) {
+        return addFlavorCombination(false, flavors);
     }
 
     /**
-     *
      * @param ordered If check flavors in order
      * @param flavors
      * @return
      */
-    public FlavorCombination addFlavorCombination(boolean ordered, Flavors... flavors){
+    public FlavorCombination addFlavorCombination(boolean ordered, Flavors... flavors) {
         List<Flavors> flavorList = new ArrayList<>();
-        for(Flavors flavor:flavors) {
+        for (Flavors flavor : flavors) {
             flavorList.add(flavor);
         }
-        Pair<List<Flavors>, Boolean> flavorCombinationPair = Pair.of(flavorList,ordered);
+        Pair<List<Flavors>, Boolean> flavorCombinationPair = Pair.of(flavorList, ordered);
         this.flavorCombinationList.add(flavorCombinationPair);
         return this;
     }

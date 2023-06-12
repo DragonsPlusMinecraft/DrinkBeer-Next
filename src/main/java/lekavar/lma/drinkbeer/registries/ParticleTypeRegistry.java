@@ -17,8 +17,7 @@ public class ParticleTypeRegistry {
     public static final RegistryObject<ParticleType<SimpleParticleType>> MIXED_BEER_DEFAULT = PARTICLES.register("mixed_beer_default", () -> new SimpleParticleType(true));
     public static final RegistryObject<ParticleType<SimpleParticleType>> CALL_BELL_TINKLE_PAW = PARTICLES.register("call_bell_tinkle_paw", () -> new SimpleParticleType(true));
 
-    public static void registerParticleProvider(RegisterParticleProvidersEvent event)
-    {
+    public static void registerParticleProvider(RegisterParticleProvidersEvent event) {
         Minecraft.getInstance().particleEngine.register(ParticleTypeRegistry.MIXED_BEER_DEFAULT.get(), FlameParticle.Provider::new);
         Minecraft.getInstance().particleEngine.register(ParticleTypeRegistry.CALL_BELL_TINKLE_PAW.get(), HeartParticle.AngryVillagerProvider::new);
     }

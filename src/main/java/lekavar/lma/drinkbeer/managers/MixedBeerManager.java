@@ -70,7 +70,7 @@ public class MixedBeerManager {
         List<Integer> spiceList = new ArrayList<>();
         CompoundTag tags = itemStack.getTagElement("BlockEntityTag");
         if (tags != null && tags.contains("MixedBeer")) {
-            for (int spice:tags.getCompound("MixedBeer").getIntArray("spiceList")) {
+            for (int spice : tags.getCompound("MixedBeer").getIntArray("spiceList")) {
                 spiceList.add(spice);
             }
         }

@@ -1,9 +1,7 @@
 package lekavar.lma.drinkbeer.blocks;
 
 import lekavar.lma.drinkbeer.blockentities.MixedBeerBlockEntity;
-import lekavar.lma.drinkbeer.managers.MixedBeerManager;
 import lekavar.lma.drinkbeer.managers.SpiceAndFlavorManager;
-import lekavar.lma.drinkbeer.utils.beer.Beers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -23,24 +21,19 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class MixedBeerBlock extends BaseEntityBlock {
     public final static VoxelShape ONE_MUG_SHAPE = Block.box(4, 0, 4, 12, 6, 12);
 
     public MixedBeerBlock() {
-        super(Properties.of(Material.WOOD).strength(1.0f).noOcclusion());
+        super(Properties.of().ignitedByLava().mapColor(MapColor.WOOD).strength(1.0f).noOcclusion().pushReaction(PushReaction.DESTROY));
     }
 
     @Override
@@ -54,18 +47,13 @@ public class MixedBeerBlock extends BaseEntityBlock {
     }
 
     @Override
-    public PushReaction getPistonPushReaction(BlockState p_149656_1_) {
-        return PushReaction.DESTROY;
-    }
-
-    @Override
     public boolean canSurvive(BlockState p_196260_1_, LevelReader p_196260_2_, BlockPos p_196260_3_) {
         if (p_196260_2_.getBlockState(p_196260_3_.below()).getBlock() instanceof BeerMugBlock) return false;
         return Block.canSupportCenter(p_196260_2_, p_196260_3_.below(), Direction.UP);
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit){
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack itemStack = player.getItemInHand(hand);
         if (itemStack.isEmpty()) {
             if (!world.isClientSide()) {
@@ -82,8 +70,7 @@ public class MixedBeerBlock extends BaseEntityBlock {
         if (te != null) {
             ItemStack mixedBeerItemStack = te.getPickStack();
             Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), mixedBeerItemStack);
-        }
-        else {
+        } else {
             System.out.println("Somthing wrong with dropping mixed beer item stack!");
         }
         super.onRemove(state, world, pos, newState, moved);
@@ -102,7 +89,7 @@ public class MixedBeerBlock extends BaseEntityBlock {
 
     @Override
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
-        if(world.isClientSide()) {
+        if (world.isClientSide()) {
             super.animateTick(state, world, pos, random);
             if (random.nextInt(5) == 0) {
                 MixedBeerBlockEntity entity = (MixedBeerBlockEntity) world.getBlockEntity(pos);

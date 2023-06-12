@@ -33,6 +33,7 @@ public class DrinkBeer {
         RecipeRegistry.RECIPE_TYPES.register(modEventBus);
         RecipeRegistry.RECIPE_SERIALIZERS.register(modEventBus);
         ParticleTypeRegistry.PARTICLES.register(modEventBus);
+        CreativeTabRegistry.TABS.register(modEventBus);
 
         modEventBus.addListener(NetWorking::init);
 

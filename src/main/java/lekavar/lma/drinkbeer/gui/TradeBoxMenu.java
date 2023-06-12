@@ -250,12 +250,11 @@ public class TradeBoxMenu extends AbstractContainerMenu {
     @Override
     public void removed(Player player) {
         super.removed(player);
-        if (!player.level.isClientSide()) {
+        if (!player.level().isClientSide()) {
             // Return Item to Player;
             clearContainer(player, this.tradeboxInventory);
-        }
-        else {
-            player.level.playSound((Player) null, player.blockPosition(), SoundEventRegistry.TRADEBOX_CLOSE.get(), SoundSource.BLOCKS, 0.6f, 1f);
+        } else {
+            player.level().playSound((Player) null, player.blockPosition(), SoundEventRegistry.TRADEBOX_CLOSE.get(), SoundSource.BLOCKS, 0.6f, 1f);
         }
     }
 
@@ -314,7 +313,7 @@ public class TradeBoxMenu extends AbstractContainerMenu {
     public void setTradeboxTrading() {
         TradeMission tradeMission = new TradeMission();
         try {
-            Block block = player.level.getBlockState(pos).getBlock();
+            Block block = player.level().getBlockState(pos).getBlock();
             if (block.asItem().equals(BlockRegistry.TRADE_BOX.get().asItem())) {
                 tradeMission = TradeMission.genRandomTradeMission();
             }

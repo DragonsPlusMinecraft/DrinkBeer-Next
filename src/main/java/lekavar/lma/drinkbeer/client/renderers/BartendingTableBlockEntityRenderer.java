@@ -13,18 +13,20 @@ import org.jetbrains.annotations.NotNull;
 
 public class BartendingTableBlockEntityRenderer implements BlockEntityRenderer<BartendingTableBlockEntity> {
 
-    public BartendingTableBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
+    public BartendingTableBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+    }
+
     @Override
     public void render(BartendingTableBlockEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, @NotNull MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
         pPoseStack.pushPose();
 
         ItemStack beerStack = pBlockEntity.takeBeer(true);
-        if(!beerStack.isEmpty()){
+        if (!beerStack.isEmpty()) {
             pPoseStack.translate(0.5, 1.25, 0.5);
             //Get light at the beer block
             int lightAbove = LevelRenderer.getLightColor(pBlockEntity.getLevel(), pBlockEntity.getBlockPos().above());
             //Render beer
-            Minecraft.getInstance().getItemRenderer().renderStatic(beerStack, ItemDisplayContext.GROUND ,lightAbove, pPackedOverlay, pPoseStack, pBufferSource, pBlockEntity.getLevel(),0);
+            Minecraft.getInstance().getItemRenderer().renderStatic(beerStack, ItemDisplayContext.GROUND, lightAbove, pPackedOverlay, pPoseStack, pBufferSource, pBlockEntity.getLevel(), 0);
         }
 
         pPoseStack.popPose();

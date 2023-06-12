@@ -5,7 +5,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 
 public class AlcoholDamage extends DamageSource {
-    public static DamageType ALCOHOL = new DamageType("drinkbeer.alcohol",0);
+    public static DamageType ALCOHOL = new DamageType("drinkbeer.alcohol", 0);
 
     public AlcoholDamage() {
         super(Holder.direct(ALCOHOL));

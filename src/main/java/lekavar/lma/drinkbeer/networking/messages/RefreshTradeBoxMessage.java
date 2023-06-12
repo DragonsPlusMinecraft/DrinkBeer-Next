@@ -7,8 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 public class RefreshTradeBoxMessage extends Message {
     private BlockPos pos;
 
-    public RefreshTradeBoxMessage(BlockPos pos)
-    {
+    public RefreshTradeBoxMessage(BlockPos pos) {
         this.pos = pos;
     }
 

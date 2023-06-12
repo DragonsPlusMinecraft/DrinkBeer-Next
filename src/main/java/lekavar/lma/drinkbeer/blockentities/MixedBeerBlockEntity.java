@@ -31,7 +31,7 @@ public class MixedBeerBlockEntity extends BlockEntity {
     }
 
     /**
-     * @see MixedBeerManager#genMixedBeerItemStack(int, List) 
+     * @see MixedBeerManager#genMixedBeerItemStack(int, List)
      */
     @Override
     public void saveAdditional(CompoundTag tag) {
@@ -51,7 +51,7 @@ public class MixedBeerBlockEntity extends BlockEntity {
         CompoundTag descriptorTag = tag.getCompound("MixedBeer");
         this.beerId = descriptorTag.getShort("beerId");
         this.spiceList.clear();
-        for (int spice: descriptorTag.getIntArray("spiceList")) {
+        for (int spice : descriptorTag.getIntArray("spiceList")) {
             this.spiceList.add(spice);
         }
     }

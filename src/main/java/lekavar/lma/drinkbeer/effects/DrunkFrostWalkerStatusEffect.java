@@ -5,8 +5,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
-import net.minecraft.world.item.enchantment.FrostWalkerEnchantment;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.enchantment.FrostWalkerEnchantment;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -15,6 +15,7 @@ public class DrunkFrostWalkerStatusEffect extends MobEffect {
     public DrunkFrostWalkerStatusEffect() {
         super(MobEffectCategory.BENEFICIAL, new Color(30, 144, 255, 255).getRGB());
     }
+
     @Override
     public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
@@ -23,7 +24,7 @@ public class DrunkFrostWalkerStatusEffect extends MobEffect {
     @Override
     public void applyEffectTick(@NotNull LivingEntity entity, int amplifier) {
         if (entity instanceof Player) {
-            FrostWalkerEnchantment.onEntityMoved(entity, entity.level, BlockPos.containing(entity.position()), 1);
+            FrostWalkerEnchantment.onEntityMoved(entity, entity.level(), BlockPos.containing(entity.position()), 1);
         }
     }
 

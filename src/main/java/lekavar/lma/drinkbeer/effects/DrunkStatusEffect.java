@@ -1,8 +1,6 @@
 package lekavar.lma.drinkbeer.effects;
 
-import lekavar.lma.drinkbeer.DrinkBeer;
 import lekavar.lma.drinkbeer.registries.MobEffectRegistry;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -48,22 +46,21 @@ public class DrunkStatusEffect extends MobEffect {
         } else if (currentDrunkAmplifier < MIN_DRUNK_AMPLIFIER) {
             user.addEffect(new MobEffectInstance(MobEffectRegistry.DRUNK.get(), DrunkStatusEffect.getDrunkDuratioin(newDrunkAmplifier), newDrunkAmplifier));
         } else {
-            if(newDrunkAmplifier > currentDrunkAmplifier){
+            if (newDrunkAmplifier > currentDrunkAmplifier) {
                 user.addEffect(new MobEffectInstance(MobEffectRegistry.DRUNK.get(), DrunkStatusEffect.getDrunkDuratioin(newDrunkAmplifier), newDrunkAmplifier));
-            }
-            else if(newDrunkAmplifier < currentDrunkAmplifier){
+            } else if (newDrunkAmplifier < currentDrunkAmplifier) {
                 int tempDrunkAmplifier = currentDrunkAmplifier - newDrunkAmplifier;
-                while(tempDrunkAmplifier > 0){
-                    decreaseDrunkStatusEffefct(user,currentDrunkAmplifier);
+                while (tempDrunkAmplifier > 0) {
+                    decreaseDrunkStatusEffefct(user, currentDrunkAmplifier);
                     currentDrunkAmplifier--;
-                    tempDrunkAmplifier --;
+                    tempDrunkAmplifier--;
                 }
             }
         }
     }
 
     public static void addStatusEffect(LivingEntity user) {
-        addStatusEffect(user,1);
+        addStatusEffect(user, 1);
     }
 
     @Override
@@ -93,7 +90,7 @@ public class DrunkStatusEffect extends MobEffect {
     }
 
     private static void decreaseDrunkStatusEffefct(LivingEntity entity, int amplifier) {
-        if (!entity.getLevel().isClientSide()) {
+        if (!entity.level().isClientSide()) {
             entity.removeEffect(MobEffectRegistry.DRUNK.get());
             MobEffectInstance nextDrunkStatusEffect = getDecreasedDrunkStatusEffect(amplifier);
             if (nextDrunkStatusEffect != null) {

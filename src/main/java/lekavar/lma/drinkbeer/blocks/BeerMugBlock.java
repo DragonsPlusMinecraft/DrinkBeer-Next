@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -41,7 +41,7 @@ public class BeerMugBlock extends Block {
     };
 
     public BeerMugBlock() {
-        super(Properties.of(Material.WOOD).strength(1.0f).noOcclusion());
+        super(Properties.of().ignitedByLava().mapColor(MapColor.WOOD).strength(1.0f).noOcclusion().pushReaction(PushReaction.DESTROY));
         this.registerDefaultState(
                 this.defaultBlockState().setValue(FACING, Direction.NORTH).setValue(AMOUNT, 1)
         );
@@ -73,9 +73,9 @@ public class BeerMugBlock extends Block {
         ItemStack itemStack = player.getItemInHand(hand);
         // Placing Beer
         if (itemStack.getItem().asItem() == state.getBlock().asItem()) {
-            if ( world != null && world.isClientSide()) {
+            if (world != null && world.isClientSide()) {
                 return InteractionResult.SUCCESS;
-            } else if (world != null){
+            } else if (world != null) {
                 int amount = state.getValue(AMOUNT);
                 int mugInHandCount = player.getItemInHand(hand).getCount();
                 boolean isCreative = player.isCreative();
@@ -96,14 +96,11 @@ public class BeerMugBlock extends Block {
                         world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
                         return InteractionResult.CONSUME;
                     }
-                    default:
-                    {
+                    default: {
                         return InteractionResult.FAIL;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 return InteractionResult.FAIL;
             }
         }
@@ -125,19 +122,13 @@ public class BeerMugBlock extends Block {
                         world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
                         world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.AMBIENT, 0.5f, 0.5f);
                         return InteractionResult.CONSUME;
-                    default:
-                    {
+                    default: {
                         return InteractionResult.FAIL;
                     }
                 }
             }
         }
         return InteractionResult.PASS;
-    }
-
-    @Override
-    public PushReaction getPistonPushReaction(BlockState p_149656_1_) {
-        return PushReaction.DESTROY;
     }
 
     @Override

@@ -3,11 +3,9 @@ package lekavar.lma.drinkbeer.registries;
 import lekavar.lma.drinkbeer.DrinkBeer;
 import lekavar.lma.drinkbeer.blocks.*;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 
 public class BlockRegistry {
@@ -48,19 +46,19 @@ public class BlockRegistry {
 
     // Spices
     public static final RegistryObject<Block> SPICE_BLAZE_PAPRIKA = BLOCKS.register("spice_blaze_paprika", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_DRIED_EGLIA_BUD  = BLOCKS.register("spice_dried_eglia_bud", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_SMOKED_EGLIA_BUD  = BLOCKS.register("spice_smoked_eglia_bud", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_AMETHYST_NIGELLA_SEEDS  = BLOCKS.register("spice_amethyst_nigella_seeds", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_CITRINE_NIGELLA_SEEDS  = BLOCKS.register("spice_citrine_nigella_seeds", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_ICE_MINT  = BLOCKS.register("spice_ice_mint", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_ICE_PATCHOULI  = BLOCKS.register("spice_ice_patchouli", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_STORM_SHARDS  = BLOCKS.register("spice_storm_shards", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_ROASTED_RED_PINE_NUTS  = BLOCKS.register("spice_roasted_red_pine_nuts", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_GLACE_GOJI_BERRIES  = BLOCKS.register("spice_glace_goji_berries", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_FROZEN_PERSIMMON  = BLOCKS.register("spice_frozen_persimmon", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_ROASTED_PECANS  = BLOCKS.register("spice_roasted_pecans", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_SILVER_NEEDLE_WHITE_TEA  = BLOCKS.register("spice_silver_needle_white_tea", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_GOLDEN_CINNAMON_POWDER  = BLOCKS.register("spice_golden_cinnamon_powder", SpiceBlock::new);
-    public static final RegistryObject<Block> SPICE_DRIED_SELAGINELLA   = BLOCKS.register("spice_dried_selaginella", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_DRIED_EGLIA_BUD = BLOCKS.register("spice_dried_eglia_bud", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_SMOKED_EGLIA_BUD = BLOCKS.register("spice_smoked_eglia_bud", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_AMETHYST_NIGELLA_SEEDS = BLOCKS.register("spice_amethyst_nigella_seeds", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_CITRINE_NIGELLA_SEEDS = BLOCKS.register("spice_citrine_nigella_seeds", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_ICE_MINT = BLOCKS.register("spice_ice_mint", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_ICE_PATCHOULI = BLOCKS.register("spice_ice_patchouli", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_STORM_SHARDS = BLOCKS.register("spice_storm_shards", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_ROASTED_RED_PINE_NUTS = BLOCKS.register("spice_roasted_red_pine_nuts", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_GLACE_GOJI_BERRIES = BLOCKS.register("spice_glace_goji_berries", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_FROZEN_PERSIMMON = BLOCKS.register("spice_frozen_persimmon", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_ROASTED_PECANS = BLOCKS.register("spice_roasted_pecans", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_SILVER_NEEDLE_WHITE_TEA = BLOCKS.register("spice_silver_needle_white_tea", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_GOLDEN_CINNAMON_POWDER = BLOCKS.register("spice_golden_cinnamon_powder", SpiceBlock::new);
+    public static final RegistryObject<Block> SPICE_DRIED_SELAGINELLA = BLOCKS.register("spice_dried_selaginella", SpiceBlock::new);
 
 }
