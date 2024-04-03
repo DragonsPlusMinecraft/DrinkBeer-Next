@@ -41,13 +41,13 @@
       "predicate": {
         "beer_id": 0.06
       },
-      "model": "drinkbeer:block//beer_mug_haars_icey_pale_lager"
+      "model": "drinkbeer:block/beer_mug_haars_icey_pale_lager"
     },
     {
       "predicate": {
         "beer_id": 0.07
       },
-      "model": "drinkbeer:block//beer_mug_pumpkin_kvass"
+      "model": "drinkbeer:block/beer_mug_pumpkin_kvass"
     },
     {
       "predicate": {
@@ -59,7 +59,7 @@
       "predicate": {
         "beer_id": 0.09
       },
-      "model": "drinkbeer:block//beer_mug_night_howl_kvass"
+      "model": "drinkbeer:block/beer_mug_night_howl_kvass"
     }
   ]
 }

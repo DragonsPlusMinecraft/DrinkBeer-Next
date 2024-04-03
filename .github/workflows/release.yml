@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew build
 
       - name: Publish (CurseForge/Modrinth)
-        uses: Kir-Antipov/mc-publish@v3.2
+        uses: Kir-Antipov/mc-publish@v3.3
         with:
           # Modrinth
           modrinth-id: RZwVw5iA
@@ -48,8 +48,7 @@ jobs:
           version: ${{ env.VERSION }}
           version-type: release
           changelog-file: changelog/${{ env.VERSION }}.md
-          files-primary: build/libs/*-${{ env.VERSION }}!(-@(dev|sources|slim)).jar
-          files-secondary: ""
+          files: build/libs/*-${{ env.VERSION }}!(-@(dev|sources|slim)).jar
 
           loaders: |
             forge
