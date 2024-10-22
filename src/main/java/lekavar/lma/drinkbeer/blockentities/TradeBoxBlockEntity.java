@@ -6,6 +6,7 @@ import lekavar.lma.drinkbeer.registries.BlockEntityRegistry;
 import lekavar.lma.drinkbeer.utils.tradebox.Locations;
 import lekavar.lma.drinkbeer.utils.tradebox.Residents;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -18,6 +19,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -89,6 +93,7 @@ public class TradeBoxBlockEntity extends BaseContainerBlockEntity {
                     process = value;
                     break;
             }
+            setChanged();
         }
 
         @Override
@@ -98,29 +103,34 @@ public class TradeBoxBlockEntity extends BaseContainerBlockEntity {
     };
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable("block.drinkbeer.trade_box_normal");
     }
 
     @Override
-    protected Component getDefaultName() {
+    protected @NotNull Component getDefaultName() {
         return Component.translatable("block.drinkbeer.trade_box_normal");
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
+    public AbstractContainerMenu createMenu(int id, @NotNull Inventory inventory, @NotNull Player player) {
         this.screenHandler = new TradeBoxMenu(id, this, syncData, inventory, this);
         return this.screenHandler;
     }
 
     @Override
-    protected AbstractContainerMenu createMenu(int id, Inventory inventory) {
+    protected @NotNull AbstractContainerMenu createMenu(int id, @NotNull Inventory inventory) {
         return null;
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        return LazyOptional.empty();
+    }
+
+    @Override
+    public void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
 
         ContainerHelper.saveAllItems(tag, this.goodInventory);

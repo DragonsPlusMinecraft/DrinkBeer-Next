@@ -4,7 +4,7 @@ import lekavar.lma.drinkbeer.utils.Message;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 
-public class RefreshTradeBoxMessage extends Message {
+public class RefreshTradeBoxMessage {
     private BlockPos pos;
 
     public RefreshTradeBoxMessage(BlockPos pos) {
@@ -15,13 +15,11 @@ public class RefreshTradeBoxMessage extends Message {
         return pos;
     }
 
-    @Override
-    public void fromBytes(FriendlyByteBuf packetBuffer) {
-        pos = packetBuffer.readBlockPos();
+    public static RefreshTradeBoxMessage fromBytes(FriendlyByteBuf packetBuffer) {
+        return new RefreshTradeBoxMessage(packetBuffer.readBlockPos());
     }
 
-    @Override
-    public void toBytes(FriendlyByteBuf packetBuffer) {
-        packetBuffer.writeBlockPos(pos);
+    public static void toBytes(RefreshTradeBoxMessage message,FriendlyByteBuf packetBuffer) {
+        packetBuffer.writeBlockPos(message.pos);
     }
 }

@@ -254,7 +254,7 @@ public class TradeBoxMenu extends AbstractContainerMenu {
             // Return Item to Player;
             clearContainer(player, this.tradeboxInventory);
         } else {
-            player.level().playSound((Player) null, player.blockPosition(), SoundEventRegistry.TRADEBOX_CLOSE.get(), SoundSource.BLOCKS, 0.6f, 1f);
+            player.level().playSound(null, player.blockPosition(), SoundEventRegistry.TRADEBOX_CLOSE.get(), SoundSource.BLOCKS, 0.6f, 1f);
         }
     }
 
@@ -314,7 +314,7 @@ public class TradeBoxMenu extends AbstractContainerMenu {
         TradeMission tradeMission = new TradeMission();
         try {
             Block block = player.level().getBlockState(pos).getBlock();
-            if (block.asItem().equals(BlockRegistry.TRADE_BOX.get().asItem())) {
+            if (block.equals(BlockRegistry.TRADE_BOX.get())) {
                 tradeMission = TradeMission.genRandomTradeMission();
             }
             /*else if(block.asItem().equals(DrinkBeer.TRADE_BOX_NORTHON.asItem()){
