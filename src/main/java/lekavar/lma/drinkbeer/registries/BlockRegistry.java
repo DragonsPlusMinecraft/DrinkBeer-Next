@@ -3,9 +3,6 @@ package lekavar.lma.drinkbeer.registries;
 import lekavar.lma.drinkbeer.DrinkBeer;
 import lekavar.lma.drinkbeer.blocks.*;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 
 public class BlockRegistry {

@@ -4,9 +4,6 @@ import lekavar.lma.drinkbeer.DrinkBeer;
 import lekavar.lma.drinkbeer.effects.DrunkFrostWalkerStatusEffect;
 import lekavar.lma.drinkbeer.effects.DrunkStatusEffect;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 
 public class MobEffectRegistry {

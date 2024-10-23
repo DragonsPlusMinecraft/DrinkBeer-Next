@@ -4,12 +4,10 @@ import com.mojang.logging.LogUtils;
 import lekavar.lma.drinkbeer.compat.ModCompat;
 import lekavar.lma.drinkbeer.networking.NetWorking;
 import lekavar.lma.drinkbeer.registries.*;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
 
@@ -20,9 +18,7 @@ public class DrinkBeer {
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final String MOD_ID = "drinkbeer";
 
-    public DrinkBeer() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
+    public DrinkBeer(IEventBus modEventBus, ModContainer container) {;
 
         MobEffectRegistry.STATUS_EFFECTS.register(modEventBus);
         ItemRegistry.ITEMS.register(modEventBus);
@@ -37,9 +33,9 @@ public class DrinkBeer {
 
         modEventBus.addListener(NetWorking::init);
 
-        forgeEventBus.addListener(ModCompat::injectRecipes);
+        var gameEventBus = NeoForge.EVENT_BUS;
 
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> DrinkBeerClient::new);
+        gameEventBus.addListener(ModCompat::injectRecipes);
     }
 
 }
