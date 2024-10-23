@@ -1,36 +1,34 @@
 package lekavar.lma.drinkbeer.recipes;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lekavar.lma.drinkbeer.registries.RecipeRegistry;
+import lekavar.lma.drinkbeer.utils.DrinkBeerCodes;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+
 import java.util.List;
 
 public class BrewingRecipe implements Recipe<IBrewingInventory> {
     public static final int INPUT_SIZE = 4;
 
-    private final ResourceLocation id;
     private final NonNullList<Ingredient> input;
     private final ItemStack cup;
     private final int brewingTime;
     private final ItemStack result;
 
-    public BrewingRecipe(ResourceLocation id, NonNullList<Ingredient> input, ItemStack cup, int brewingTime, ItemStack result) {
-        this.id = id;
+    public BrewingRecipe(NonNullList<Ingredient> input, ItemStack cup, int brewingTime, ItemStack result) {
         this.input = input;
         this.cup = cup;
         this.brewingTime = brewingTime;
@@ -73,13 +71,11 @@ public class BrewingRecipe implements Recipe<IBrewingInventory> {
         return testTarget.isEmpty();
     }
 
-    /**
-     * Returns an Item that is the result of this recipe
-     */
     @Override
-    public ItemStack assemble(@NotNull IBrewingInventory brewingInventory, @NotNull RegistryAccess registryAccess) {
+    public ItemStack assemble(IBrewingInventory iBrewingInventory, HolderLookup.Provider provider) {
         return result.copy();
     }
+
 
     private int getLatestMatched(List<Ingredient> testTarget, ItemStack tested) {
         for (int i = 0; i < testTarget.size(); i++) {
@@ -100,10 +96,11 @@ public class BrewingRecipe implements Recipe<IBrewingInventory> {
      * then return an empty stack.
      */
     @Override
-    public ItemStack getResultItem(@NotNull RegistryAccess registryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider provider) {
         //For Safety, I use #copy
         return result.copy();
     }
+
 
     // For JEI Addon.
     // See JEIBrewingRecipe#setRecipe
@@ -115,11 +112,6 @@ public class BrewingRecipe implements Recipe<IBrewingInventory> {
     @Override
     public boolean isSpecial() {
         return true;
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return this.id;
     }
 
     @Override
@@ -145,49 +137,45 @@ public class BrewingRecipe implements Recipe<IBrewingInventory> {
     }
 
     public static class Serializer implements RecipeSerializer<BrewingRecipe> {
+        public static final MapCodec<BrewingRecipe> CODEC = RecordCodecBuilder.mapCodec(ins-> ins.group(
+                DrinkBeerCodes.NON_NULL_LIST_4_INGREDIENT_CODEC.fieldOf("ingredients").forGetter(BrewingRecipe::getIngredients),
+                ItemStack.CODEC.fieldOf("cup").forGetter(BrewingRecipe::getBeerCup),
+                Codec.INT.fieldOf("brewing_time").forGetter(BrewingRecipe::getBrewingTime),
+                ItemStack.CODEC.fieldOf("result").forGetter(BrewingRecipe::getResultItemNoRegistryAccess)
+                ).apply(ins,BrewingRecipe::new));
 
-        @Override
-        public BrewingRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {
-            NonNullList<Ingredient> ingredients = itemsFromJson(GsonHelper.getAsJsonArray(jsonObject, "ingredients"));
-            ItemStack cup = CraftingHelper.getItemStack(GsonHelper.getAsJsonObject(jsonObject, "cup"), true);
-            int brewing_time = GsonHelper.getAsInt(jsonObject, "brewing_time");
-            ItemStack result = CraftingHelper.getItemStack(GsonHelper.getAsJsonObject(jsonObject, "result"), true);
-            return new BrewingRecipe(resourceLocation, ingredients, cup, brewing_time, result);
-        }
+        public static final StreamCodec<RegistryFriendlyByteBuf,BrewingRecipe> STREAM_CODEC = StreamCodec.of(Serializer::toNetwork,Serializer::fromNetwork);
 
-        private static NonNullList<Ingredient> itemsFromJson(JsonArray jsonArray) {
-            NonNullList<Ingredient> ingredients = NonNullList.create();
-            for (int i = 0; i < jsonArray.size(); ++i) {
-                Ingredient ingredient = Ingredient.fromJson(jsonArray.get(i));
-                ingredients.add(ingredient);
-            }
-            return ingredients;
-        }
 
-        @Nullable
-        @Override
-        public BrewingRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf packetBuffer) {
+        public static BrewingRecipe fromNetwork(RegistryFriendlyByteBuf packetBuffer) {
             int i = packetBuffer.readVarInt();
             NonNullList<Ingredient> ingredients = NonNullList.withSize(i, Ingredient.EMPTY);
-            for (int j = 0; j < ingredients.size(); ++j) {
-                ingredients.set(j, Ingredient.fromNetwork(packetBuffer));
-            }
-            ItemStack cup = packetBuffer.readItem();
+            ingredients.replaceAll((_it) -> Ingredient.CONTENTS_STREAM_CODEC.decode(packetBuffer));
+            ItemStack cup = ItemStack.STREAM_CODEC.decode(packetBuffer);
             int brewingTime = packetBuffer.readVarInt();
-            ItemStack result = packetBuffer.readItem();
-            return new BrewingRecipe(resourceLocation, ingredients, cup, brewingTime, result);
+            ItemStack result = ItemStack.STREAM_CODEC.decode(packetBuffer);
+            return new BrewingRecipe(ingredients, cup, brewingTime, result);
+        }
+
+        public static void toNetwork(RegistryFriendlyByteBuf packetBuffer, BrewingRecipe brewingRecipe) {
+            packetBuffer.writeVarInt(brewingRecipe.input.size());
+            for (Ingredient ingredient : brewingRecipe.input) {
+                Ingredient.CONTENTS_STREAM_CODEC.encode(packetBuffer, ingredient);
+            }
+            ItemStack.STREAM_CODEC.encode(packetBuffer, brewingRecipe.cup);
+            packetBuffer.writeVarInt(brewingRecipe.brewingTime);
+            ItemStack.STREAM_CODEC.encode(packetBuffer, brewingRecipe.result);
+
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf packetBuffer, BrewingRecipe brewingRecipe) {
-            packetBuffer.writeVarInt(brewingRecipe.input.size());
-            for (Ingredient ingredient : brewingRecipe.input) {
-                ingredient.toNetwork(packetBuffer);
-            }
-            packetBuffer.writeItem(brewingRecipe.cup);
-            packetBuffer.writeVarInt(brewingRecipe.brewingTime);
-            packetBuffer.writeItem(brewingRecipe.result);
+        public MapCodec<BrewingRecipe> codec() {
+            return CODEC;
+        }
 
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, BrewingRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }
