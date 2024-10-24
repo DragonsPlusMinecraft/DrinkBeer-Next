@@ -45,7 +45,7 @@
   "effect.drinkbeer.drunk_frost_walker": "醉酒的冰霜行者",
   "effect.drinkbeer.drunk": "醉酒",
 
-  "death.attack.drinkbeer.alcohol": "%1$s把自己喝死了",
+  "death.drinkbeer.alcohol_poisoning": "%1$s把自己喝死了",
 
   "drinkbeer.location.northon": "北森镇",
   "drinkbeer.location.twigvalley": "树枝谷",

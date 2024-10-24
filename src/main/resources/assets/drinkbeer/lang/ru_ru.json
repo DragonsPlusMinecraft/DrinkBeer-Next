@@ -45,7 +45,7 @@
 "effect.drinkbeer.drunk_frost_walker": "Пьяный Ледоход",
 "effect.drinkbeer.drunk": "Пьяный",
 
-"death.attack.drinkbeer.alcohol": "%1$s напился до смерти",
+"death.drinkbeer.alcohol_poisoning": "%1$s напился до смерти",
 
 "drinkbeer.location.northon": "Нортон",
 "drinkbeer.location.twigvalley": "Аллея Веток",

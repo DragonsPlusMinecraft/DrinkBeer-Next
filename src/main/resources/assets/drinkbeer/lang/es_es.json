@@ -45,7 +45,7 @@
   "effect.drinkbeer.drunk_frost_walker": "Borrachera de paso helado",
   "effect.drinkbeer.drunk": "Borrachera",
 
-  "death.attack.drinkbeer.alcohol": "%1$s se embriagó hasta morir",
+  "death.drinkbeer.alcohol_poisoning": "%1$s se embriagó hasta morir",
 
   "drinkbeer.location.northon": "Northon",
   "drinkbeer.location.twigvalley": "Twigvalley",

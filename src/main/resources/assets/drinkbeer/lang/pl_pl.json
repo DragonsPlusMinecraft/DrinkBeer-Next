@@ -45,7 +45,7 @@
   "effect.drinkbeer.drunk_frost_walker": "Pijany mroźny piechur",
   "effect.drinkbeer.drunk": "Upicie",
 
-  "death.attack.drinkbeer.alcohol": "Gracz %1$s zapił się na śmierć",
+  "death.drinkbeer.alcohol_poisoning": "Gracz %1$s zapił się na śmierć",
 
   "drinkbeer.location.northon": "Northon",
   "drinkbeer.location.twigvalley": "Twigvalley",

@@ -45,7 +45,7 @@
   "effect.drinkbeer.drunk_frost_walker": "Drunk Frost Walker",
   "effect.drinkbeer.drunk": "Drunk",
 
-  "death.attack.drinkbeer.alcohol": "%1$s drank to death",
+  "death.drinkbeer.alcohol_poisoning": "%1$s drank to death",
 
   "drinkbeer.location.northon": "Northon",
   "drinkbeer.location.twigvalley": "Twigvalley",

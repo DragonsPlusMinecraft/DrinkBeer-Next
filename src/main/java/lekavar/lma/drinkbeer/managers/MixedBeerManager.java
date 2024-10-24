@@ -2,7 +2,7 @@ package lekavar.lma.drinkbeer.managers;
 
 import lekavar.lma.drinkbeer.effects.DrunkStatusEffect;
 import lekavar.lma.drinkbeer.effects.NightHowlStatusEffect;
-import lekavar.lma.drinkbeer.entities.damages.AlcoholDamage;
+import lekavar.lma.drinkbeer.registries.DamageRegistry;
 import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
 import lekavar.lma.drinkbeer.registries.DataComponentTypeRegistry;
 import lekavar.lma.drinkbeer.registries.ItemRegistry;
@@ -17,7 +17,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.tuple.Pair;
@@ -125,7 +124,7 @@ public class MixedBeerManager {
         if (user instanceof Player) {
             if (!((Player) user).isCreative()) {
                 if (mixedBeerOnUsing.getHealth() < 0) {
-                    user.hurt(new AlcoholDamage(), Math.abs(mixedBeerOnUsing.getHealth()));
+                    user.hurt(DamageRegistry.alcohol(world.registryAccess()), Math.abs(mixedBeerOnUsing.getHealth()));
                 } else {
                     user.heal(mixedBeerOnUsing.getHealth());
                 }
