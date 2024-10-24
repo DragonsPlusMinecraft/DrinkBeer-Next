@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// Heavily TODO for new API
+// Heavily TODO for new API & fix crash problem
 public class JEIBrewingRecipe implements IRecipeCategory<BrewingRecipe> {
     public static final RecipeType<BrewingRecipe> TYPE = RecipeType.create(DrinkBeer.MOD_ID, "brewing", BrewingRecipe.class);
     private static final String DRINK_BEER_YELLOW = "#F4D223";

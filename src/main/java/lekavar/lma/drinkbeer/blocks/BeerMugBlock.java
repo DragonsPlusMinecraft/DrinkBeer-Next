@@ -70,31 +70,30 @@ public class BeerMugBlock extends Block {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hitResult) {
-        ItemStack takeBackBeer = state.getBlock().asItem().getDefaultInstance();
-        ItemHandlerHelper.giveItemToPlayer(player, takeBackBeer);
-        int amount = state.getValue(AMOUNT);
-        switch (amount) {
-            case 3:
-            case 2:
-                world.setBlockAndUpdate(pos, state.getBlock().defaultBlockState().setValue(AMOUNT, amount - 1).setValue(FACING, state.getValue(FACING)));
-                world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.AMBIENT, 0.5f, 0.5f);
-                return InteractionResult.sidedSuccess(world.isClientSide);
-            case 1:
-                world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-                world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.AMBIENT, 0.5f, 0.5f);
-                return InteractionResult.sidedSuccess(world.isClientSide);
-            default: {
-                return InteractionResult.FAIL;
+        if(!world.isClientSide()){
+            ItemStack takeBackBeer = state.getBlock().asItem().getDefaultInstance();
+            ItemHandlerHelper.giveItemToPlayer(player, takeBackBeer);
+            int amount = state.getValue(AMOUNT);
+            switch (amount) {
+                case 3:
+                case 2:
+                    world.setBlockAndUpdate(pos, state.getBlock().defaultBlockState().setValue(AMOUNT, amount - 1).setValue(FACING, state.getValue(FACING)));
+                    world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.AMBIENT, 0.5f, 0.5f);
+                    break;
+                default:
+                    world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                    world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.AMBIENT, 0.5f, 0.5f);
             }
         }
+        return InteractionResult.sidedSuccess(world.isClientSide);
     }
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         ItemStack itemStack = player.getItemInHand(hand);
         // Placing Beer
-        if (itemStack.getItem().asItem() == state.getBlock().asItem()) {
-            if (world.isClientSide()) {
+        if (itemStack.getItem() == state.getBlock().asItem()) {
+            if (!world.isClientSide()) {
                 int amount = state.getValue(AMOUNT);
                 int mugInHandCount = player.getItemInHand(hand).getCount();
                 boolean isCreative = player.isCreative();
@@ -105,7 +104,7 @@ public class BeerMugBlock extends Block {
                             player.getItemInHand(hand).setCount(mugInHandCount - 1);
                         }
                         world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                        return ItemInteractionResult.sidedSuccess(world.isClientSide);
+                        break;
                     }
                     case 2: {
                         world.setBlockAndUpdate(pos, state.getBlock().defaultBlockState().setValue(AMOUNT, 3).setValue(FACING, state.getValue(FACING)));
@@ -113,15 +112,14 @@ public class BeerMugBlock extends Block {
                             player.getItemInHand(hand).setCount(mugInHandCount - 1);
                         }
                         world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                        return ItemInteractionResult.sidedSuccess(world.isClientSide);
+                        break;
                     }
-                    default: {
-                        return ItemInteractionResult.FAIL;
-                    }
+                    default: {}
                 }
             }
+            return ItemInteractionResult.sidedSuccess(world.isClientSide);
         }
-        return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
 
