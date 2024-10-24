@@ -27,7 +27,6 @@ public class BeerBarrelScreen extends AbstractContainerScreen<BeerBarrelMenu> {
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-        renderBackground(guiGraphics,mouseX,mouseY,partialTicks);
         RenderSystem.setShaderTexture(0, BEER_BARREL_CONTAINER_RESOURCE);
         int i = (this.width - this.getXSize()) / 2;
         int j = (this.height - this.getYSize()) / 2;
@@ -36,7 +35,6 @@ public class BeerBarrelScreen extends AbstractContainerScreen<BeerBarrelMenu> {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(guiGraphics,mouseX,mouseY,partialTicks);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         renderTooltip(guiGraphics, mouseX, mouseY);
     }

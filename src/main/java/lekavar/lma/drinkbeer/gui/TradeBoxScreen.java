@@ -9,6 +9,7 @@ import lekavar.lma.drinkbeer.utils.Convert;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.ImageWidget;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -27,6 +28,8 @@ import java.awt.*;
 
 public class TradeBoxScreen extends AbstractContainerScreen<TradeBoxMenu> {
     private static final ResourceLocation TRADE_BOX_GUI = ResourceLocation.fromNamespaceAndPath(DrinkBeer.MOD_ID, "textures/gui/container/trade_box.png");
+    private static final ResourceLocation REFRESH_WIDGET_GUI = ResourceLocation.fromNamespaceAndPath(DrinkBeer.MOD_ID, "container/trade_box_dup"); // TODO Glitch Exists.
+    private static final WidgetSprites REFRESH_WIDGET_SPRITE = new WidgetSprites(REFRESH_WIDGET_GUI,REFRESH_WIDGET_GUI);
     private final int textureWidth = 176;
     private final int textureHeight = 166;
     TradeBoxMenu container;
@@ -89,7 +92,7 @@ public class TradeBoxScreen extends AbstractContainerScreen<TradeBoxMenu> {
     protected void init() {
         int x = (width - getXSize()) / 2;
         int y = (height - getYSize()) / 2;
-        this.addRenderableWidget(new ImageButton(x + 156, y + 5, 15, 15, new WidgetSprites(TRADE_BOX_GUI, TRADE_BOX_GUI), (buttonWidget) -> {
+        this.addRenderableWidget(new ImageButton(x + 156, y + 5, 15, 15, REFRESH_WIDGET_SPRITE, (buttonWidget) -> {
             if (container.isTrading()) {
                 BlockPos pos = getHitTradeBoxBlockPos();
                 if (pos != null)
