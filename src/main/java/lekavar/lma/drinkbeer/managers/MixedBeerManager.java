@@ -4,16 +4,19 @@ import lekavar.lma.drinkbeer.effects.DrunkStatusEffect;
 import lekavar.lma.drinkbeer.effects.NightHowlStatusEffect;
 import lekavar.lma.drinkbeer.entities.damages.AlcoholDamage;
 import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
+import lekavar.lma.drinkbeer.registries.DataComponentTypeRegistry;
 import lekavar.lma.drinkbeer.registries.ItemRegistry;
 import lekavar.lma.drinkbeer.utils.beer.Beers;
+import lekavar.lma.drinkbeer.utils.dataComponent.SpiceData;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Flavors;
 import lekavar.lma.drinkbeer.utils.mixedbeer.MixedBeerOnUsing;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -25,8 +28,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MixedBeerManager {
-    public static final int MAX_SPICES_COUNT = 3;
-
     public static ItemStack genMixedBeerItemStack(int beerId, int... spiceIds) {
         List<Integer> spiceList = new ArrayList<>();
         for (int spiceId : spiceIds) {
@@ -37,15 +38,9 @@ public class MixedBeerManager {
 
     public static ItemStack genMixedBeerItemStack(int beerId, List<Integer> spiceList) {
         ItemStack resultStack = new ItemStack(ItemRegistry.MIXED_BEER.get(), 1);
+        resultStack.set(DataComponentTypeRegistry.BEER_ID_COMPONENT,beerId);
         spiceList = removeIllegalSpiceId(spiceList);
-
-        // tag with key name "BlockEntityTag" will be passed to related BlockEntity automatically
-        CompoundTag tags = resultStack.getOrCreateTagElement("BlockEntityTag");
-        CompoundTag tag = new CompoundTag();
-        tags.put("MixedBeer", tag);
-        tag.putInt("beerId", beerId);
-        tag.putIntArray("spiceList", spiceList);
-
+        resultStack.set(DataComponentTypeRegistry.SPICE_COMPONENT,SpiceData.fromSpiceList(spiceList));
         return resultStack;
     }
 
@@ -56,22 +51,24 @@ public class MixedBeerManager {
     }
 
     public static int getBeerId(ItemStack itemStack) {
-        int beerId = Beers.EMPTY_BEER_ID;
         if (itemStack.getItem() instanceof MixedBeerBlockItem) {
-            CompoundTag tags = itemStack.getTagElement("BlockEntityTag");
-            if (tags != null && tags.contains("MixedBeer")) {
-                beerId = tags.getCompound("MixedBeer").getInt("beerId");
-            }
+            return itemStack.get(DataComponentTypeRegistry.BEER_ID_COMPONENT);
         }
-        return beerId;
+        return Beers.EMPTY_BEER_ID;
     }
 
     public static List<Integer> getSpiceList(ItemStack itemStack) {
         List<Integer> spiceList = new ArrayList<>();
-        CompoundTag tags = itemStack.getTagElement("BlockEntityTag");
-        if (tags != null && tags.contains("MixedBeer")) {
-            for (int spice : tags.getCompound("MixedBeer").getIntArray("spiceList")) {
-                spiceList.add(spice);
+        if (itemStack.getItem() instanceof MixedBeerBlockItem) {
+            var data = itemStack.get(DataComponentTypeRegistry.SPICE_COMPONENT);
+            if(data.spiceA()>0){
+                spiceList.add(data.spiceA());
+                if(data.spiceB()>0){
+                    spiceList.add(data.spiceB());
+                    if(data.spiceC()>0){
+                        spiceList.add(data.spiceC());
+                    }
+                }
             }
         }
         return spiceList;
@@ -96,7 +93,7 @@ public class MixedBeerManager {
         //Initialize beer
         mixedBeerOnUsing.setBeer(Beers.byId(getBeerId(stack)));
         //Initialize food level
-        mixedBeerOnUsing.addHunger(Objects.requireNonNull(mixedBeerOnUsing.getBeerItem().getFoodProperties().getNutrition()));
+        mixedBeerOnUsing.addHunger(Objects.requireNonNull(mixedBeerOnUsing.getBeerItem().getFoodProperties(stack,null).nutrition()));
         //Initialize spices and flavors
         List<Integer> spiceList = getSpiceList(stack);
         mixedBeerOnUsing.setSpiceList(spiceList);
@@ -108,7 +105,7 @@ public class MixedBeerManager {
         /*Deal with properties!*/
         /*------------------------------------------------------------------------------------------------------------------*/
         //Add base beer status effect
-        mixedBeerOnUsing.addStatusEffect(getBeerStatusEffectList(mixedBeerOnUsing.getBeerItem(), world));
+        mixedBeerOnUsing.addStatusEffect(getBeerStatusEffectList(mixedBeerOnUsing.getBeerItem().getDefaultInstance(), world));
         //Deal with flavors
         SpiceAndFlavorManager.applyFlavorValue(mixedBeerOnUsing);
 
@@ -137,23 +134,23 @@ public class MixedBeerManager {
             user.setHealth(user.getHealth() + mixedBeerOnUsing.getHealth());
         }
         //Apply status effects
-        for (org.apache.commons.lang3.tuple.Pair<MobEffect, Integer> statusEffectPair : mixedBeerOnUsing.getStatusEffectList()) {
-            user.addEffect(new MobEffectInstance(statusEffectPair.getKey(), statusEffectPair.getValue()));
+        for (Pair<MobEffect, Integer> statusEffectPair : mixedBeerOnUsing.getStatusEffectList()) {
+            user.addEffect(new MobEffectInstance(Holder.direct(statusEffectPair.getKey()), statusEffectPair.getValue()));
         }
         //Apply flavor actions
         SpiceAndFlavorManager.applyFlavorAction(mixedBeerOnUsing, world, user);
     }
 
-    private static List<Pair<MobEffect, Integer>> getBeerStatusEffectList(Item beerItem, Level world) {
-        List<org.apache.commons.lang3.tuple.Pair<MobEffect, Integer>> resultStatusEffectList = new ArrayList<>();
-        List<com.mojang.datafixers.util.Pair<MobEffectInstance, Float>> statusEffectList = Objects.requireNonNull(beerItem.getFoodProperties().getEffects());
-        if (statusEffectList != null) {
-            if (!statusEffectList.isEmpty()) {
-                for (com.mojang.datafixers.util.Pair<MobEffectInstance, Float> statusEffect : statusEffectList)
-                    resultStatusEffectList.add(Pair.of(statusEffect.getFirst().getEffect(), statusEffect.getFirst().getDuration()));
+    private static List<Pair<MobEffect, Integer>> getBeerStatusEffectList(ItemStack stack, Level world) {
+        List<Pair<MobEffect, Integer>> resultStatusEffectList = new ArrayList<>();
+        List<FoodProperties.PossibleEffect> possibleEffects = stack.getFoodProperties(null).effects();
+        if (possibleEffects != null) {
+            if (!possibleEffects.isEmpty()) {
+                for (FoodProperties.PossibleEffect possibleEffect : possibleEffects)
+                    resultStatusEffectList.add(Pair.of(possibleEffect.effect().getEffect().value(),possibleEffect.effect().getDuration()));
             }
         }
-        if (beerItem.equals(Beers.BEER_MUG_NIGHT_HOWL_KVASS.getBeerItem())) {
+        if (stack.getItem().equals(Beers.BEER_MUG_NIGHT_HOWL_KVASS.getBeerItem())) {
             Pair<MobEffect, Integer> nightHowlStatusEffectPair = NightHowlStatusEffect.getStatusEffectPair(world);
             resultStatusEffectList.add(nightHowlStatusEffectPair);
         }

@@ -4,6 +4,7 @@ import lekavar.lma.drinkbeer.managers.MixedBeerManager;
 import lekavar.lma.drinkbeer.managers.SpiceAndFlavorManager;
 import lekavar.lma.drinkbeer.registries.DataComponentTypeRegistry;
 import lekavar.lma.drinkbeer.utils.beer.Beers;
+import lekavar.lma.drinkbeer.utils.dataComponent.SpiceData;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Flavors;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
 import net.minecraft.ChatFormatting;
@@ -26,7 +27,8 @@ public class MixedBeerBlockItem extends BeerBlockItem {
     public MixedBeerBlockItem(Block block) {
         super(block, new Item.Properties().stacksTo(1)
                 .food(new FoodProperties.Builder().alwaysEdible().build())
-                .component(DataComponentTypeRegistry.BEER_ID_COMPONENT, 1));
+                .component(DataComponentTypeRegistry.BEER_ID_COMPONENT, 1)
+                .component(DataComponentTypeRegistry.SPICE_COMPONENT, new SpiceData(Spices.EMPTY_SPICE_ID,Spices.EMPTY_SPICE_ID,Spices.EMPTY_SPICE_ID)));
     }
 
     public void appendMixedBeerTooltip(ItemStack stack, List<Component> tooltip) {
@@ -37,7 +39,7 @@ public class MixedBeerBlockItem extends BeerBlockItem {
         Item beerItem = Beers.byId(beerId).getBeerItem();
         String beerName = beerId > Beers.EMPTY_BEER_ID ? "block.drinkbeer." + beerItem.toString()
                 : MixedBeerManager.getUnmixedToolTipTranslationKey();
-        String beerTooltip = beerId > Beers.EMPTY_BEER_ID ? "item.drinkbeer." + beerItem.toString() + ".tooltip"
+        String beerTooltip = beerId > Beers.EMPTY_BEER_ID ? "item.drinkbeer." + beerItem + ".tooltip"
                 : "";
 
         tooltip.add(Component.translatable(beerName).setStyle(Style.EMPTY.applyFormat(ChatFormatting.BLUE)));
@@ -49,7 +51,7 @@ public class MixedBeerBlockItem extends BeerBlockItem {
         }
         //Base food level
         if (beerId > Beers.EMPTY_BEER_ID) {
-            String hunger = Integer.toString(beerItem.getFoodProperties().getNutrition());
+            String hunger = Integer.toString(beerItem.getFoodProperties(stack,null).nutrition());
             tooltip.add(Component.translatable("drinkbeer.restores_hunger").setStyle(Style.EMPTY.applyFormat(ChatFormatting.BLUE)).append(hunger));
         }
 
@@ -96,13 +98,8 @@ public class MixedBeerBlockItem extends BeerBlockItem {
     @Override
     protected boolean placeBlock(BlockPlaceContext context, BlockState state) {
         if (super.placeBlock(context, state)) {
-            // ItemStack stack = context.getItemInHand();
-
-            // MixedBeerBlockEntity entity = (MixedBeerBlockEntity) context.getLevel().getBlockEntity(context.getClickedPos());
-            // entity.updateIngredient(MixedBeerManager.getBeerId(stack), MixedBeerManager.getSpiceList(stack));
             return true;
         }
-
         return false;
     }
 
@@ -121,7 +118,7 @@ public class MixedBeerBlockItem extends BeerBlockItem {
     }
 
     public static int getBeerId(ItemStack itemStack) {
-        return itemStack.get(DataComponentTypeRegistry.BEER_ID_COMPONENT.get()); >>> TODO >>> // TODO relative data thing not completed
+        return itemStack.get(DataComponentTypeRegistry.BEER_ID_COMPONENT);
     }
 
     @Override

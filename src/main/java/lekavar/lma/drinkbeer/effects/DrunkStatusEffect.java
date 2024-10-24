@@ -23,18 +23,13 @@ public class DrunkStatusEffect extends MobEffect {
         super(MobEffectCategory.HARMFUL, new Color(255, 222, 173, 255).getRGB());
     }
 
-    @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
-        return true;
-    }
-
     //Value: > 0:Increase drunk amplifier 0 <:Decrease drunk amplifier
     public static void addStatusEffect(LivingEntity user, int value) {
         if (value == 0) {
             return;
         }
 
-        MobEffectInstance statusEffectInstance = user.getEffect(MobEffectRegistry.DRUNK.get());
+        MobEffectInstance statusEffectInstance = user.getEffect(MobEffectRegistry.DRUNK);
         int currentDrunkAmplifier = statusEffectInstance == null ? -1 : statusEffectInstance.getAmplifier();
         int newDrunkAmplifier = currentDrunkAmplifier + value;
         newDrunkAmplifier = Math.min(newDrunkAmplifier, MAX_DRUNK_AMPLIFIER);
@@ -42,12 +37,12 @@ public class DrunkStatusEffect extends MobEffect {
         if (currentDrunkAmplifier < MIN_DRUNK_AMPLIFIER && newDrunkAmplifier < MIN_DRUNK_AMPLIFIER) {
             return;
         } else if (currentDrunkAmplifier >= MIN_DRUNK_AMPLIFIER && newDrunkAmplifier < MIN_DRUNK_AMPLIFIER) {
-            user.removeEffect(MobEffectRegistry.DRUNK.get());
+            user.removeEffect(MobEffectRegistry.DRUNK);
         } else if (currentDrunkAmplifier < MIN_DRUNK_AMPLIFIER) {
-            user.addEffect(new MobEffectInstance(MobEffectRegistry.DRUNK.get(), DrunkStatusEffect.getDrunkDuratioin(newDrunkAmplifier), newDrunkAmplifier));
+            user.addEffect(new MobEffectInstance(MobEffectRegistry.DRUNK, DrunkStatusEffect.getDrunkDuratioin(newDrunkAmplifier), newDrunkAmplifier));
         } else {
             if (newDrunkAmplifier > currentDrunkAmplifier) {
-                user.addEffect(new MobEffectInstance(MobEffectRegistry.DRUNK.get(), DrunkStatusEffect.getDrunkDuratioin(newDrunkAmplifier), newDrunkAmplifier));
+                user.addEffect(new MobEffectInstance(MobEffectRegistry.DRUNK, DrunkStatusEffect.getDrunkDuratioin(newDrunkAmplifier), newDrunkAmplifier));
             } else if (newDrunkAmplifier < currentDrunkAmplifier) {
                 int tempDrunkAmplifier = currentDrunkAmplifier - newDrunkAmplifier;
                 while (tempDrunkAmplifier > 0) {
@@ -64,19 +59,25 @@ public class DrunkStatusEffect extends MobEffect {
     }
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
-        int time = entity.getEffect(MobEffectRegistry.DRUNK.get()).getDuration();
+    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+        int time = entity.getEffect(MobEffectRegistry.DRUNK).getDuration();
         //Always give harmful status effects
         giveHarmfulStatusEffects(entity, amplifier, time);
         //Give next lower Drunk status effect when duration's out
         if (time == 1) {
             decreaseDrunkStatusEffefct(entity, amplifier);
         }
+        return true;
+    }
+
+    @Override
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+        return true;
     }
 
     private void giveHarmfulStatusEffects(LivingEntity entity, int amplifier, int time) {
         if (amplifier >= MAX_DRUNK_AMPLIFIER) {
-            int duration = entity.getEffect(MobEffectRegistry.DRUNK.get()).getDuration();
+            int duration = entity.getEffect(MobEffectRegistry.DRUNK).getDuration();
             entity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, duration, 0, false, visible));
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, MAX_DRUNK_AMPLIFIER - 1, false, visible));
         } else if (time % harmulStatusEffectsIntervals[amplifier] == 0) {
@@ -91,7 +92,7 @@ public class DrunkStatusEffect extends MobEffect {
 
     private static void decreaseDrunkStatusEffefct(LivingEntity entity, int amplifier) {
         if (!entity.level().isClientSide()) {
-            entity.removeEffect(MobEffectRegistry.DRUNK.get());
+            entity.removeEffect(MobEffectRegistry.DRUNK);
             MobEffectInstance nextDrunkStatusEffect = getDecreasedDrunkStatusEffect(amplifier);
             if (nextDrunkStatusEffect != null) {
                 entity.addEffect(nextDrunkStatusEffect);
@@ -104,12 +105,12 @@ public class DrunkStatusEffect extends MobEffect {
         if (nextDrunkAmplifier < MIN_DRUNK_AMPLIFIER) {
             return null;
         } else {
-            return new MobEffectInstance(MobEffectRegistry.DRUNK.get(), getDrunkDuratioin(nextDrunkAmplifier), nextDrunkAmplifier);
+            return new MobEffectInstance(MobEffectRegistry.DRUNK, getDrunkDuratioin(nextDrunkAmplifier), nextDrunkAmplifier);
         }
     }
 
     public static int getNextDrunkAmplifier(LivingEntity user) {
-        MobEffectInstance statusEffectInstance = user.getEffect(MobEffectRegistry.DRUNK.get());
+        MobEffectInstance statusEffectInstance = user.getEffect(MobEffectRegistry.DRUNK);
         int drunkAmplifier = statusEffectInstance == null ? -1 : statusEffectInstance.getAmplifier();
         return drunkAmplifier < MAX_DRUNK_AMPLIFIER ? drunkAmplifier + 1 : drunkAmplifier;
     }
