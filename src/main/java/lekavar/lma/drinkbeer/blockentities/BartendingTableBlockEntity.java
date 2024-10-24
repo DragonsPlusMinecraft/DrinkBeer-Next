@@ -8,32 +8,29 @@ import lekavar.lma.drinkbeer.registries.BlockEntityRegistry;
 import lekavar.lma.drinkbeer.utils.beer.Beers;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class BartendingTableBlockEntity extends BlockEntity {
     private final SimpleContainer inv = new OneItemContainer(2);
-    private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> new BartendingTableInvWrapper(this));
+    public final IItemHandler itemHandler = new BartendingTableInvWrapper(this);
 
     public BartendingTableBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityRegistry.BARTENDING_TABLE_TILEENTITY.get(), pos, state);
@@ -96,57 +93,40 @@ public class BartendingTableBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        handleUpdateTag(pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        handleUpdateTag(pkt.getTag(),registries);
     }
 
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
-        // Will get tag from #getUpdateTag
+        // The packet uses the CompoundTag returned by #getUpdateTag. An alternative overload of #create exists
+        // that allows you to specify a custom update tag, including the ability to omit data the client might not need.
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
-        tag.put("input", inv.getItem(0).serializeNBT());
-        tag.put("output", inv.getItem(1).serializeNBT());
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
+        ContainerHelper.saveAllItems(tag, this.inv.getItems(), true, registries);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag);
-        inv.setItem(0, ItemStack.of((CompoundTag) tag.get("input")));
-        inv.setItem(1, ItemStack.of((CompoundTag) tag.get("output")));
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        super.handleUpdateTag(tag, registries);
+        ContainerHelper.loadAllItems(tag, this.inv.getItems(), registries);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("input", inv.getItem(0).serializeNBT());
-        tag.put("output", inv.getItem(1).serializeNBT());
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag,registries);
+        ContainerHelper.saveAllItems(tag, this.inv.getItems(), true, registries);
     }
 
     @Override
-    public void load(@Nonnull CompoundTag tag) {
-        super.load(tag);
-        inv.setItem(0, ItemStack.of((CompoundTag) tag.get("input")));
-        inv.setItem(1, ItemStack.of((CompoundTag) tag.get("output")));
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        handler.invalidate();
-    }
-
-    @NotNull
-    @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER)
-            return handler.cast();
-        return super.getCapability(cap, side);
+    public void loadAdditional(@Nonnull CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag,registries);
+        ContainerHelper.loadAllItems(tag, this.inv.getItems(), registries);
     }
 
     static class OneItemContainer extends SimpleContainer {

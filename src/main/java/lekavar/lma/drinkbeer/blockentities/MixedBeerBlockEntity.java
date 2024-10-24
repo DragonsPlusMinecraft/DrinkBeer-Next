@@ -3,6 +3,7 @@ package lekavar.lma.drinkbeer.blockentities;
 import lekavar.lma.drinkbeer.managers.MixedBeerManager;
 import lekavar.lma.drinkbeer.registries.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -34,8 +35,8 @@ public class MixedBeerBlockEntity extends BlockEntity {
      * @see MixedBeerManager#genMixedBeerItemStack(int, List)
      */
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag,registries);
 
         CompoundTag descriptorTag = new CompoundTag();
         descriptorTag.putInt("beerId", getBeerId());
@@ -45,8 +46,8 @@ public class MixedBeerBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void load(@Nonnull CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(@Nonnull CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag,registries);
 
         CompoundTag descriptorTag = tag.getCompound("MixedBeer");
         this.beerId = descriptorTag.getShort("beerId");
@@ -57,14 +58,14 @@ public class MixedBeerBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        super.handleUpdateTag(tag); // will directly call load()
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        super.handleUpdateTag(tag,registries); // will directly call load()
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
-        saveAdditional(tag);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
+        saveAdditional(tag,registries);
 
         return tag;
     }
@@ -84,8 +85,8 @@ public class MixedBeerBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        handleUpdateTag(pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        handleUpdateTag(pkt.getTag(),registries);
     }
 
     @Nullable

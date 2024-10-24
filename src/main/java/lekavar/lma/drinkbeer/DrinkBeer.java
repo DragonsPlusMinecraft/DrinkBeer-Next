@@ -23,6 +23,8 @@ public class DrinkBeer {
         ParticleTypeRegistry.PARTICLES.register(modEventBus);
         CreativeTabRegistry.TABS.register(modEventBus);
 
+        modEventBus.addListener(CapabilityRegistry::registerCapabilities);
+
         modEventBus.addListener(NetWorking::init);
     }
 

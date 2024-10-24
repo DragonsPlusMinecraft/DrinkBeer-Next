@@ -6,8 +6,7 @@ import lekavar.lma.drinkbeer.recipes.IBrewingInventory;
 import lekavar.lma.drinkbeer.registries.BlockEntityRegistry;
 import lekavar.lma.drinkbeer.registries.RecipeRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Connection;
@@ -15,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -26,14 +24,12 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MilkBucketItem;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -44,8 +40,7 @@ import java.util.List;
 public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
 
     private final BrewingInventory brewingInventory = new BrewingInventory(this);
-    // This int will not only indicate remainingBrewTime, but also represent Standard Brewing Time if valid in "waiting for ingredients" stage
-    private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> new BarrelInvWrapper(this));
+    public final IItemHandler itemHandler = new BarrelInvWrapper(this);
     private int remainingBrewTime;
     // 0 - waiting for ingredient, 1 - brewing, 2 - waiting for pickup product
     private int statusCode;
@@ -83,7 +78,8 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
             // ingredient slots must have no empty slot
             if (brewingInventory.getIngredients().size() == 4) {
                 // Try match Recipe
-                BrewingRecipe recipe = level.getRecipeManager().getRecipeFor(RecipeRegistry.RECIPE_TYPE_BREWING.get(), brewingInventory, this.level).orElse(null);
+                RecipeHolder<BrewingRecipe> recipeholder = level.getRecipeManager().getRecipeFor(RecipeRegistry.RECIPE_TYPE_BREWING.get(), brewingInventory, this.level).orElse(null);
+                var recipe = recipeholder.value();
                 if (canBrew(recipe)) {
                     // Show Standard Brewing Time & Result
                     setResult(recipe);
@@ -191,29 +187,19 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("inv", brewingInventory.createTag());
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag,registries);
+        tag.put("inv", brewingInventory.createTag(registries));
         tag.putShort("RemainingBrewTime", (short) this.remainingBrewTime);
         tag.putShort("statusCode", (short) this.statusCode);
     }
 
     @Override
-    public void load(@Nonnull CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(@Nonnull CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag,registries);
         this.remainingBrewTime = tag.getShort("RemainingBrewTime");
         this.statusCode = tag.getShort("statusCode");
-
-        // Compat previous version
-        if (tag.contains("inv"))
-            brewingInventory.fromTag((ListTag) tag.get("inv"));
-        else {
-            var items = NonNullList.withSize(6, ItemStack.EMPTY);
-            ContainerHelper.loadAllItems(tag, items);
-            for (int i = 0; i < 6; i++) {
-                brewingInventory.setItem(i, items.get(i));
-            }
-        }
+        brewingInventory.fromTag((ListTag) tag.get("inv"), registries);
 
     }
 
@@ -229,8 +215,8 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        handleUpdateTag(pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+        handleUpdateTag(pkt.getTag(),registries);
     }
 
     @Nullable
@@ -240,29 +226,15 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
-        tag.put("inv", brewingInventory.createTag());
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
+        tag.put("inv", brewingInventory.createTag(registries));
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        brewingInventory.fromTag((ListTag) tag.get("inv"));
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        handler.invalidate();
-    }
-
-    @NotNull
-    @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER && (side == null || side == Direction.DOWN))
-            return handler.cast();
-        return super.getCapability(cap, side);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        brewingInventory.fromTag((ListTag) tag.get("inv"),registries);
     }
 
     public static class BrewingInventory extends SimpleContainer implements IBrewingInventory {
@@ -305,25 +277,13 @@ public class BeerBarrelBlockEntity extends BlockEntity implements MenuProvider {
             }
         }
 
-
         @Override
-        public void fromTag(ListTag pContainerNbt) {
-            for (int i = 0; i < 6; ++i) {
-                ItemStack itemstack = ItemStack.of(pContainerNbt.getCompound(i));
-                if (!itemstack.isEmpty()) this.setItem(i, itemstack);
-            }
-        }
-
-        @Override
-        public ListTag createTag() {
-            ListTag listtag = new ListTag();
-            for (int i = 0; i < 6; ++i)
-                listtag.add(getItem(i).save(new CompoundTag()));
-            return listtag;
+        public int size() {
+            return 6;
         }
     }
 
-    static class BarrelInvWrapper implements IItemHandlerModifiable {
+    static class BarrelInvWrapper extends ItemStackHandler {
 
         private BrewingInventory brewingInventory;
         private BeerBarrelBlockEntity be;
