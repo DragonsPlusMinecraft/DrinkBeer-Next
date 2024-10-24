@@ -23,9 +23,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +56,7 @@ public class TradeBoxMenu extends AbstractContainerMenu {
     }
 
     public TradeBoxMenu(int id, Inventory playerInventory, BlockPos pos) {
-        this(id, ((TradeBoxBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)), ((TradeBoxBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)).syncData, playerInventory, ((TradeBoxBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)));
+        this(id, ((TradeBoxBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)).goodInventory, ((TradeBoxBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)).syncData, playerInventory, ((TradeBoxBlockEntity) Minecraft.getInstance().level.getBlockEntity(pos)));
     }
 
     public TradeBoxMenu(int id, Container goodInventory, ContainerData syncData, Inventory playerInventory, TradeBoxBlockEntity tradeBoxBlockEntity) {

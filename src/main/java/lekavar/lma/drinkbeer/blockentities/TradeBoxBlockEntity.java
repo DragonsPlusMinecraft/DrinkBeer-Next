@@ -7,10 +7,8 @@ import lekavar.lma.drinkbeer.utils.tradebox.Locations;
 import lekavar.lma.drinkbeer.utils.tradebox.Residents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -27,7 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TradeBoxBlockEntity extends BlockEntity implements MenuProvider {
-    private SimpleContainer goodInventory = new SimpleContainer(8);
+    public SimpleContainer goodInventory = new SimpleContainer(8);
     private int coolingTime;
     private int locationId;
     private int residentId;

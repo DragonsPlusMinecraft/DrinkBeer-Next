@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class BeerBarrelScreen extends AbstractContainerScreen<BeerBarrelMenu> {
 
-    private final ResourceLocation BEER_BARREL_CONTAINER_RESOURCE = new ResourceLocation(DrinkBeer.MOD_ID, "textures/gui/container/beer_barrel.png");
+    private final ResourceLocation BEER_BARREL_CONTAINER_RESOURCE = ResourceLocation.fromNamespaceAndPath(DrinkBeer.MOD_ID, "textures/gui/container/beer_barrel.png");
     private final int textureWidth = 176;
     private final int textureHeight = 166;
     private Inventory inventory;
@@ -27,7 +27,7 @@ public class BeerBarrelScreen extends AbstractContainerScreen<BeerBarrelMenu> {
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTicks, int mouseX, int mouseY) {
-        renderBackground(guiGraphics);
+        renderBackground(guiGraphics,mouseX,mouseY,partialTicks);
         RenderSystem.setShaderTexture(0, BEER_BARREL_CONTAINER_RESOURCE);
         int i = (this.width - this.getXSize()) / 2;
         int j = (this.height - this.getYSize()) / 2;
@@ -36,7 +36,7 @@ public class BeerBarrelScreen extends AbstractContainerScreen<BeerBarrelMenu> {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(guiGraphics);
+        renderBackground(guiGraphics,mouseX,mouseY,partialTicks);
         super.render(guiGraphics, mouseX, mouseY, partialTicks);
         renderTooltip(guiGraphics, mouseX, mouseY);
     }
