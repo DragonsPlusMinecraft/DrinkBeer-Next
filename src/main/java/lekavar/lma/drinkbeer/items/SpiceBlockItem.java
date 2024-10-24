@@ -22,26 +22,24 @@ public class SpiceBlockItem extends BlockItem {
     public SpiceBlockItem(Block block, @Nullable MobEffectInstance statusEffectInstance, int hunger) {
         super(block, new Item.Properties().stacksTo(64)
                 .food(statusEffectInstance != null
-                        ? new FoodProperties.Builder().nutrition(hunger).effect(statusEffectInstance, 1).alwaysEat().build()
-                        : new FoodProperties.Builder().nutrition(hunger).alwaysEat().build())
+                        ? new FoodProperties.Builder().nutrition(hunger).effect(statusEffectInstance, 1).alwaysEdible().build()
+                        : new FoodProperties.Builder().nutrition(hunger).alwaysEdible().build())
         );
     }
 
-    @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
-        if (world != null && world.isClientSide()) {
-            //Spice title
-            tooltip.add(Component.translatable(SpiceAndFlavorManager.getSpiceToolTipTranslationKey()).setStyle(Style.EMPTY.applyFormat(ChatFormatting.YELLOW)));
-            //Flavor title
-            tooltip.add(Component.translatable(SpiceAndFlavorManager.getFlavorToolTipTranslationKey()).append(":").setStyle(Style.EMPTY.applyFormat(ChatFormatting.WHITE)));
-            //Flavor and tooltip
-            Flavors flavors = Spices.byItem(this.asItem()).getFlavor();
-            tooltip.add(Component.translatable(SpiceAndFlavorManager.getFlavorTranslationKey(flavors.getId()))
-                    .append("(")
-                    .append(Component.translatable(SpiceAndFlavorManager.getFlavorToolTipTranslationKey(flavors.getId())))
-                    .append(")")
-                    .setStyle(Style.EMPTY.applyFormat(ChatFormatting.RED)));
-        }
-    }
 
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        //Spice title
+        tooltipComponents.add(Component.translatable(SpiceAndFlavorManager.getSpiceToolTipTranslationKey()).setStyle(Style.EMPTY.applyFormat(ChatFormatting.YELLOW)));
+        //Flavor title
+        tooltipComponents.add(Component.translatable(SpiceAndFlavorManager.getFlavorToolTipTranslationKey()).append(":").setStyle(Style.EMPTY.applyFormat(ChatFormatting.WHITE)));
+        //Flavor and tooltip
+        Flavors flavors = Spices.byItem(this.asItem()).getFlavor();
+        tooltipComponents.add(Component.translatable(SpiceAndFlavorManager.getFlavorTranslationKey(flavors.getId()))
+                .append("(")
+                .append(Component.translatable(SpiceAndFlavorManager.getFlavorToolTipTranslationKey(flavors.getId())))
+                .append(")")
+                .setStyle(Style.EMPTY.applyFormat(ChatFormatting.RED)));
+    }
 }

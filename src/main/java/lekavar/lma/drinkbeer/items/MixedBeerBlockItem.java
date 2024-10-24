@@ -2,6 +2,7 @@ package lekavar.lma.drinkbeer.items;
 
 import lekavar.lma.drinkbeer.managers.MixedBeerManager;
 import lekavar.lma.drinkbeer.managers.SpiceAndFlavorManager;
+import lekavar.lma.drinkbeer.registries.DataComponentTypeRegistry;
 import lekavar.lma.drinkbeer.utils.beer.Beers;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Flavors;
 import lekavar.lma.drinkbeer.utils.mixedbeer.Spices;
@@ -24,7 +25,8 @@ import java.util.List;
 public class MixedBeerBlockItem extends BeerBlockItem {
     public MixedBeerBlockItem(Block block) {
         super(block, new Item.Properties().stacksTo(1)
-                .food(new FoodProperties.Builder().alwaysEat().build()));
+                .food(new FoodProperties.Builder().alwaysEdible().build())
+                .component(DataComponentTypeRegistry.BEER_ID_COMPONENT, 1));
     }
 
     public void appendMixedBeerTooltip(ItemStack stack, List<Component> tooltip) {
@@ -91,13 +93,6 @@ public class MixedBeerBlockItem extends BeerBlockItem {
         return name;
     }
 
-
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-        if (world != null && world.isClientSide()) {
-            appendMixedBeerTooltip(stack, tooltip);
-        }
-    }
-
     @Override
     protected boolean placeBlock(BlockPlaceContext context, BlockState state) {
         if (super.placeBlock(context, state)) {
@@ -112,6 +107,11 @@ public class MixedBeerBlockItem extends BeerBlockItem {
     }
 
     @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        appendMixedBeerTooltip(stack, tooltipComponents);
+    }
+
+    @Override
     protected boolean canPlace(BlockPlaceContext context, BlockState state) {
         if (context.getClickLocation().distanceTo(context.getPlayer().position()) > MAX_PLACE_DISTANCE)
             return false;
@@ -121,7 +121,7 @@ public class MixedBeerBlockItem extends BeerBlockItem {
     }
 
     public static int getBeerId(ItemStack itemStack) {
-        return itemStack.getOrCreateTagElement("BlockEntityTag").getCompound("MixedBeer").getInt("beerId");
+        return itemStack.get(DataComponentTypeRegistry.BEER_ID_COMPONENT.get()); >>> TODO >>> // TODO relative data thing not completed
     }
 
     @Override
@@ -135,4 +135,6 @@ public class MixedBeerBlockItem extends BeerBlockItem {
 
         return super.finishUsingItem(stack, world, user);
     }
+
+
 }

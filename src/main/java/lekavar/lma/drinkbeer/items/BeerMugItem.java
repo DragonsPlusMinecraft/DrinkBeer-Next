@@ -26,23 +26,23 @@ public class BeerMugItem extends BeerBlockItem {
 
     public BeerMugItem(Block block, int nutrition, boolean hasExtraTooltip) {
         super(block, new Item.Properties().stacksTo(16)
-                .food(new FoodProperties.Builder().nutrition(nutrition).alwaysEat().build()));
+                .food(new FoodProperties.Builder().nutrition(nutrition).alwaysEdible().build()));
         this.hasExtraTooltip = hasExtraTooltip;
     }
 
     public BeerMugItem(Block block, @Nullable MobEffectInstance statusEffectInstance, int nutrition, boolean hasExtraTooltip) {
         super(block, new Item.Properties().stacksTo(16)
                 .food(statusEffectInstance != null
-                        ? new FoodProperties.Builder().nutrition(nutrition).effect(statusEffectInstance, 1).alwaysEat().build()
-                        : new FoodProperties.Builder().nutrition(nutrition).alwaysEat().build()));
+                        ? new FoodProperties.Builder().nutrition(nutrition).effect(statusEffectInstance, 1).alwaysEdible().build()
+                        : new FoodProperties.Builder().nutrition(nutrition).alwaysEdible().build()));
         this.hasExtraTooltip = hasExtraTooltip;
     }
 
     public BeerMugItem(Block block, Supplier<MobEffectInstance> statusEffectInstance, int nutrition, boolean hasExtraTooltip) {
         super(block, new Item.Properties().stacksTo(16)
                 .food(statusEffectInstance != null
-                        ? new FoodProperties.Builder().nutrition(nutrition).effect(statusEffectInstance, 1).alwaysEat().build()
-                        : new FoodProperties.Builder().nutrition(nutrition).alwaysEat().build()));
+                        ? new FoodProperties.Builder().nutrition(nutrition).effect(statusEffectInstance, 1).alwaysEdible().build()
+                        : new FoodProperties.Builder().nutrition(nutrition).alwaysEdible().build()));
         this.hasExtraTooltip = hasExtraTooltip;
     }
 
@@ -56,13 +56,13 @@ public class BeerMugItem extends BeerBlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         String name = this.asItem().toString();
-        if (hasEffectNoticeTooltip() && world != null && world.isClientSide()) {
-            tooltip.add(Component.translatable("item.drinkbeer." + name + ".tooltip").setStyle(Style.EMPTY.applyFormat(ChatFormatting.BLUE)));
+        if (hasEffectNoticeTooltip()) {
+            tooltipComponents.add(Component.translatable("item.drinkbeer." + name + ".tooltip").setStyle(Style.EMPTY.applyFormat(ChatFormatting.BLUE)));
         }
-        String hunger = String.valueOf(stack.getItem().getFoodProperties().getNutrition());
-        tooltip.add(Component.translatable("drinkbeer.restores_hunger").setStyle(Style.EMPTY.applyFormat(ChatFormatting.BLUE)).append(hunger));
+        String hunger = String.valueOf(stack.getItem().getFoodProperties(stack,null).nutrition());
+        tooltipComponents.add(Component.translatable("drinkbeer.restores_hunger").setStyle(Style.EMPTY.applyFormat(ChatFormatting.BLUE)).append(hunger));
     }
 
     private boolean hasEffectNoticeTooltip() {
