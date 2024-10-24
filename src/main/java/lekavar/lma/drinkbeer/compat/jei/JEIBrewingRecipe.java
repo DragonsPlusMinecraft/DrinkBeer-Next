@@ -23,8 +23,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-;
 
+// Heavily TODO for new API
 public class JEIBrewingRecipe implements IRecipeCategory<BrewingRecipe> {
     public static final RecipeType<BrewingRecipe> TYPE = RecipeType.create(DrinkBeer.MOD_ID, "brewing", BrewingRecipe.class);
     private static final String DRINK_BEER_YELLOW = "#F4D223";
@@ -36,7 +36,7 @@ public class JEIBrewingRecipe implements IRecipeCategory<BrewingRecipe> {
 
     public JEIBrewingRecipe(IGuiHelper helper) {
         guiHelper = helper;
-        background = helper.createDrawable(new ResourceLocation(DrinkBeer.MOD_ID, "textures/gui/jei/brewing_gui.png"),
+        background = helper.createDrawable(ResourceLocation.fromNamespaceAndPath(DrinkBeer.MOD_ID, "textures/gui/jei/brewing_gui.png"),
                 0, 0, 175, 69);
         icon = helper.createDrawableItemStack(new ItemStack(ItemRegistry.BEER_MUG.get()));
     }
@@ -49,11 +49,6 @@ public class JEIBrewingRecipe implements IRecipeCategory<BrewingRecipe> {
     @Override
     public Component getTitle() {
         return Component.translatable("drinkbeer.jei.title.brewing");
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
     }
 
     @Override
@@ -84,6 +79,7 @@ public class JEIBrewingRecipe implements IRecipeCategory<BrewingRecipe> {
 
     @Override
     public void draw(BrewingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        background.draw(guiGraphics, 0, 0);
         IDrawable drawable = guiHelper.createDrawableItemStack(recipe.getBeerCup());
         drawable.draw(guiGraphics, 73, 40);
     }
@@ -94,22 +90,22 @@ public class JEIBrewingRecipe implements IRecipeCategory<BrewingRecipe> {
         if (!inTransferBottomRange(mouseX, mouseY)) {
             if (inCupSlotRange(mouseX, mouseY)) {
                 tooltips.add(Component.translatable("drinkbeer.jei.tooltip.cup_slot")
-                        .setStyle(Style.EMPTY.withColor(TextColor.parseColor(DRINK_BEER_YELLOW))));
+                        .setStyle(Style.EMPTY.withColor(TextColor.parseColor(DRINK_BEER_YELLOW).getOrThrow())));
                 tooltips.add(Component.translatable("drinkbeer.jei.tooltip.cup_1")
-                        .setStyle(Style.EMPTY.withColor(TextColor.parseColor(NIGHT_HOWL_CUP_HEX_COLOR)))
+                        .setStyle(Style.EMPTY.withColor(TextColor.parseColor(NIGHT_HOWL_CUP_HEX_COLOR).getOrThrow()))
                         .append(Component.literal(recipe.getRequiredCupCount() + " ")
-                                .withStyle(Style.EMPTY.withBold(true).withColor(TextColor.parseColor(DRINK_BEER_YELLOW))))
+                                .withStyle(Style.EMPTY.withBold(true).withColor(TextColor.parseColor(DRINK_BEER_YELLOW).getOrThrow())))
                         .append(Component.translatable(recipe.getBeerCup().getItem().getDescriptionId())
                                 .withStyle(ChatFormatting.WHITE))
                         .append(Component.translatable("drinkbeer.jei.tooltip.cup_2")
-                                .setStyle(Style.EMPTY.withColor(TextColor.parseColor(NIGHT_HOWL_CUP_HEX_COLOR)))));
+                                .setStyle(Style.EMPTY.withColor(TextColor.parseColor(NIGHT_HOWL_CUP_HEX_COLOR).getOrThrow()))));
             } else {
                 int brewingTimeMin = (recipe.getBrewingTime() / 20) / 60;
                 int brewingTimeSec = recipe.getBrewingTime() / 20 - brewingTimeMin * 60;
                 tooltips.add(Component.translatable("drinkbeer.jei.tooltip.brewing")
-                        .setStyle(Style.EMPTY.withColor(TextColor.parseColor(PUMPKIN_DRINK_CUP_HEX_COLOR)))
+                        .setStyle(Style.EMPTY.withColor(TextColor.parseColor(PUMPKIN_DRINK_CUP_HEX_COLOR).getOrThrow()))
                         .append(Component.literal(brewingTimeMin + ":" + (brewingTimeSec < 10 ? "0" + brewingTimeSec : brewingTimeSec))
-                                .withStyle(Style.EMPTY.withBold(true).withColor(TextColor.parseColor(DRINK_BEER_YELLOW)))));
+                                .withStyle(Style.EMPTY.withBold(true).withColor(TextColor.parseColor(DRINK_BEER_YELLOW).getOrThrow()))));
             }
         }
         return tooltips;
