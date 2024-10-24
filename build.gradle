@@ -2,6 +2,7 @@ plugins {
     id 'idea'
     id 'net.neoforged.moddev' version '1.0.21'
     id 'maven-publish'
+    id "me.modmuss50.mod-publish-plugin" version "0.7.4"
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -126,8 +127,8 @@ dependencies {
     implementation "curse.maven:jade-${jade_project_id}:${jade_file_id}"
 
     compileOnly "mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}"
-    compileOnly "mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}"
-    implementation "mezz.jei:jei-${jei_minecraft_version}-forge:${jei_version}"
+    compileOnly "mezz.jei:jei-${jei_minecraft_version}-neoforge-api:${jei_version}"
+    implementation "mezz.jei:jei-${jei_minecraft_version}-neoforge:${jei_version}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -169,6 +170,26 @@ idea {
     }
 }
 
+publishMods {
+    file = tasks.jar.archiveFile
+    changelog = new File("changelog/${mod_version}.md").text
+    version = mod_version
+    type = ALPHA
+    displayName = "Drink Beer Refill ${mod_version} for ${minecraft_version}"
+    modLoaders.add("neoforge")
+
+    curseforge {
+        projectId = "729120"
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        minecraftVersions.add(minecraft_version)
+    }
+
+    modrinth {
+        projectId = "RZwVw5iA"
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        minecraftVersions.add(minecraft_version)
+    }
+}
 
 publishing {
     publications {
