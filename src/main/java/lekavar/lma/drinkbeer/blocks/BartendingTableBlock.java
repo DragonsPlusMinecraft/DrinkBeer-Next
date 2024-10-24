@@ -1,5 +1,6 @@
 package lekavar.lma.drinkbeer.blocks;
 
+import com.mojang.serialization.MapCodec;
 import lekavar.lma.drinkbeer.blockentities.BartendingTableBlockEntity;
 import lekavar.lma.drinkbeer.items.BeerMugItem;
 import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
@@ -11,6 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -36,6 +38,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class BartendingTableBlock extends BaseEntityBlock {
+    public static final MapCodec<BartendingTableBlock> CODEC = simpleCodec(pro->new BartendingTableBlock());
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty OPENED = BooleanProperty.create("opened");
     public static final IntegerProperty TYPE = IntegerProperty.create("type", 1, 2);
@@ -66,63 +69,75 @@ public class BartendingTableBlock extends BaseEntityBlock {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
     }
 
+    @Nullable
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+        return new BartendingTableBlockEntity(blockPos, blockState);
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!world.isClientSide()) {
-            ItemStack itemStack = player.getItemInHand(hand);
             BlockEntity blockentity = world.getBlockEntity(pos);
             if (blockentity instanceof BartendingTableBlockEntity bartendingTableBlockEntity) {
-                if (itemStack.isEmpty()) {
-                    if (player.isShiftKeyDown()) {
-                        boolean currentOpenedState = state.getValue(OPENED);
-                        world.playSound(null, pos, currentOpenedState ? SoundEventRegistry.BARTENDING_TABLE_CLOSE.get() : SoundEventRegistry.BARTENDING_TABLE_OPEN.get(), SoundSource.BLOCKS, 1f, 1f);
-                        world.setBlockAndUpdate(pos, state.setValue(OPENED, !currentOpenedState));
-                        return InteractionResult.CONSUME;
-                    } else {
-                        var tryTake = bartendingTableBlockEntity.takeBeer(false);
-                        if (!tryTake.isEmpty()) {
-                            boolean flag = player.getInventory().add(tryTake);
-                            if (!flag) {
-                                ItemEntity itementity = player.drop(tryTake, false);
-                                if (itementity != null) {
-                                    itementity.setNoPickUpDelay();
-                                    itementity.setThrower(player.getUUID());
-                                }
+                if (player.isShiftKeyDown()) {
+                    boolean currentOpenedState = state.getValue(OPENED);
+                    world.playSound(null, pos, currentOpenedState ? SoundEventRegistry.BARTENDING_TABLE_CLOSE.get() : SoundEventRegistry.BARTENDING_TABLE_OPEN.get(), SoundSource.BLOCKS, 1f, 1f);
+                    world.setBlockAndUpdate(pos, state.setValue(OPENED, !currentOpenedState));
+                    return InteractionResult.CONSUME;
+                } else {
+                    var tryTake = bartendingTableBlockEntity.takeBeer(false);
+                    if (!tryTake.isEmpty()) {
+                        boolean flag = player.getInventory().add(tryTake);
+                        if (!flag) {
+                            ItemEntity itementity = player.drop(tryTake, false);
+                            if (itementity != null) {
+                                itementity.setNoPickUpDelay();
+                                itementity.setThrower(player);
                             }
                         }
                     }
-                } else {
-                    if (itemStack.getItem() instanceof MixedBeerBlockItem || itemStack.getItem() instanceof BeerMugItem) {
-                        var placeIn = itemStack.copy();
-                        placeIn.setCount(1);
-                        var result = bartendingTableBlockEntity.placeBeer(placeIn);
-                        if (result) {
-                            world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                            if (!player.getAbilities().instabuild)
-                                itemStack.shrink(1);
-                        }
-                        return InteractionResult.CONSUME;
-                    } else if (itemStack.getItem() instanceof SpiceBlockItem) {
-                        var placeIn = itemStack.copy();
-                        placeIn.setCount(1);
-                        var result = bartendingTableBlockEntity.putSpice(placeIn);
-                        if (result) {
-                            world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                            if (!player.getAbilities().instabuild)
-                                itemStack.shrink(1);
-                        }
-                    }
-                    return InteractionResult.CONSUME;
                 }
             }
         }
         return InteractionResult.sidedSuccess(world.isClientSide);
     }
 
-    @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new BartendingTableBlockEntity(blockPos, blockState);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!world.isClientSide()) {
+            ItemStack itemStack = player.getItemInHand(hand);
+            BlockEntity blockentity = world.getBlockEntity(pos);
+            if (blockentity instanceof BartendingTableBlockEntity bartendingTableBlockEntity) {
+                if (itemStack.getItem() instanceof MixedBeerBlockItem || itemStack.getItem() instanceof BeerMugItem) {
+                    var placeIn = itemStack.copy();
+                    placeIn.setCount(1);
+                    var result = bartendingTableBlockEntity.placeBeer(placeIn);
+                    if (result) {
+                        world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
+                        if (!player.getAbilities().instabuild)
+                            itemStack.shrink(1);
+                    }
+                    return ItemInteractionResult.CONSUME;
+                } else if (itemStack.getItem() instanceof SpiceBlockItem) {
+                    var placeIn = itemStack.copy();
+                    placeIn.setCount(1);
+                    var result = bartendingTableBlockEntity.putSpice(placeIn);
+                    if (result) {
+                        world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
+                        if (!player.getAbilities().instabuild)
+                            itemStack.shrink(1);
+                    }
+                }
+                return ItemInteractionResult.CONSUME;
+            }
+        }
+        return ItemInteractionResult.sidedSuccess(world.isClientSide);
     }
 
     @Override

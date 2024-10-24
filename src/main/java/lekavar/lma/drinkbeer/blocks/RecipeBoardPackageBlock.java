@@ -3,6 +3,8 @@ package lekavar.lma.drinkbeer.blocks;
 import lekavar.lma.drinkbeer.registries.SoundEventRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -38,22 +40,13 @@ public class RecipeBoardPackageBlock extends Block {
         this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
     }
 
-    @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!world.isClientSide()) {
-            world.playSound(null, pos, SoundEventRegistry.UNPACKING.get(), SoundSource.BLOCKS, 0.8f, 1f);
-            getRecipeBoardDrop().forEach(itemStack -> Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), itemStack));
-            world.setBlock(pos, Blocks.AIR.defaultBlockState(), 1);
-        }
-        return InteractionResult.sidedSuccess(world.isClientSide);
-    }
-
     private List<ItemStack> getRecipeBoardDrop() {
-        return ForgeRegistries.BLOCKS.getValues().stream().filter(block -> {
+        return BuiltInRegistries.BLOCK.entrySet().stream().filter(entry -> {
+            var block = entry.getValue();
             if (block instanceof RecipeBoardBlock) {
                 return ((RecipeBoardBlock) block).isAcquirableViaPackage();
             } else return false;
-        }).map(block -> block.asItem().getDefaultInstance()).collect(Collectors.toList());
+        }).map(entry -> entry.getValue().asItem().getDefaultInstance()).collect(Collectors.toList());
     }
 
     @Nullable
@@ -65,6 +58,16 @@ public class RecipeBoardPackageBlock extends Block {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!world.isClientSide()) {
+            world.playSound(null, pos, SoundEventRegistry.UNPACKING.get(), SoundSource.BLOCKS, 0.8f, 1f);
+            getRecipeBoardDrop().forEach(itemStack -> Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), itemStack));
+            world.setBlock(pos, Blocks.AIR.defaultBlockState(), 1);
+        }
+        return InteractionResult.sidedSuccess(world.isClientSide);
     }
 
     @Override

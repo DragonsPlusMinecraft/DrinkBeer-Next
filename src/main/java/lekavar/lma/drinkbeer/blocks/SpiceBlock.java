@@ -54,12 +54,26 @@ public class SpiceBlock extends HalfTransparentBlock {
     }
 
     @Override
-    public BlockState updateShape(BlockState p_196271_1_, Direction p_196271_2_, BlockState p_196271_3_, LevelAccessor p_196271_4_, BlockPos p_196271_5_, BlockPos p_196271_6_) {
-        return p_196271_2_ == Direction.DOWN && !p_196271_1_.canSurvive(p_196271_4_, p_196271_5_) ? Blocks.AIR.defaultBlockState() : super.updateShape(p_196271_1_, p_196271_2_, p_196271_3_, p_196271_4_, p_196271_5_, p_196271_6_);
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        return direction == Direction.DOWN && !state.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
     @Override
-    public RenderShape getRenderShape(BlockState p_49232_) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (level.isClientSide) {
+            SimpleParticleType particle = Spices.byItem(this.asItem()).getFlavor().getParticle();
+            double x = (double) pos.getX() + 0.5D;
+            double y = (double) pos.getY() + 0.3D + new Random().nextDouble() / 4;
+            double z = (double) pos.getZ() + 0.5D;
+            if (particle != null) {
+                level.addParticle(particle, x, y, z, 0.0D, 0.0D, 0.0D);
+            }
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
@@ -75,22 +89,9 @@ public class SpiceBlock extends HalfTransparentBlock {
     }
 
     @Override
-    public boolean canSurvive(BlockState p_196260_1_, LevelReader p_196260_2_, BlockPos p_196260_3_) {
-        if (p_196260_2_.getBlockState(p_196260_3_.below()).getBlock() == Blocks.AIR) return false;
-        return Block.canSupportCenter(p_196260_2_, p_196260_3_.below(), Direction.UP);
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        if (level.getBlockState(pos.below()).getBlock() == Blocks.AIR) return false;
+        return Block.canSupportCenter(level, pos.below(), Direction.UP);
     }
 
-    @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (world.isClientSide) {
-            SimpleParticleType particle = Spices.byItem(this.asItem()).getFlavor().getParticle();
-            double x = (double) pos.getX() + 0.5D;
-            double y = (double) pos.getY() + 0.3D + new Random().nextDouble() / 4;
-            double z = (double) pos.getZ() + 0.5D;
-            if (particle != null) {
-                world.addParticle(particle, x, y, z, 0.0D, 0.0D, 0.0D);
-            }
-        }
-        return InteractionResult.SUCCESS;
-    }
 }

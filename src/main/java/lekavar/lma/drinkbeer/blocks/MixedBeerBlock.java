@@ -1,5 +1,7 @@
 package lekavar.lma.drinkbeer.blocks;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import lekavar.lma.drinkbeer.blockentities.MixedBeerBlockEntity;
 import lekavar.lma.drinkbeer.managers.SpiceAndFlavorManager;
 import net.minecraft.core.BlockPos;
@@ -30,6 +32,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class MixedBeerBlock extends BaseEntityBlock {
+    public final static MapCodec<MixedBeerBlock> CODEC = simpleCodec(pro->new MixedBeerBlock());
     public final static VoxelShape ONE_MUG_SHAPE = Block.box(4, 0, 4, 12, 6, 12);
 
     public MixedBeerBlock() {
@@ -37,31 +40,19 @@ public class MixedBeerBlock extends BaseEntityBlock {
     }
 
     @Override
-    public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_, CollisionContext p_220053_4_) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return ONE_MUG_SHAPE;
     }
 
     @Override
-    public BlockState updateShape(BlockState p_196271_1_, Direction p_196271_2_, BlockState p_196271_3_, LevelAccessor p_196271_4_, BlockPos p_196271_5_, BlockPos p_196271_6_) {
-        return p_196271_2_ == Direction.DOWN && !p_196271_1_.canSurvive(p_196271_4_, p_196271_5_) ? Blocks.AIR.defaultBlockState() : super.updateShape(p_196271_1_, p_196271_2_, p_196271_3_, p_196271_4_, p_196271_5_, p_196271_6_);
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        return direction == Direction.DOWN && !state.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
     @Override
-    public boolean canSurvive(BlockState p_196260_1_, LevelReader p_196260_2_, BlockPos p_196260_3_) {
-        if (p_196260_2_.getBlockState(p_196260_3_.below()).getBlock() instanceof BeerMugBlock) return false;
-        return Block.canSupportCenter(p_196260_2_, p_196260_3_.below(), Direction.UP);
-    }
-
-    @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        ItemStack itemStack = player.getItemInHand(hand);
-        if (itemStack.isEmpty()) {
-            if (!world.isClientSide()) {
-                world.removeBlock(pos, false);
-                return InteractionResult.CONSUME;
-            }
-        }
-        return InteractionResult.FAIL;
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        if (level.getBlockState(pos.below()).getBlock() == Blocks.AIR) return false;
+        return Block.canSupportCenter(level, pos.below(), Direction.UP);
     }
 
     @Override
@@ -71,15 +62,28 @@ public class MixedBeerBlock extends BaseEntityBlock {
             ItemStack mixedBeerItemStack = te.getPickStack();
             Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), mixedBeerItemStack);
         } else {
-            System.out.println("Somthing wrong with dropping mixed beer item stack!");
+            System.out.println("Something goes wrong with dropping mixed beer item stack!");
         }
         super.onRemove(state, world, pos, newState, moved);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!level.isClientSide) {
+            level.removeBlock(pos, false);
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new MixedBeerBlockEntity(blockPos, blockState);
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
     }
 
     @Override

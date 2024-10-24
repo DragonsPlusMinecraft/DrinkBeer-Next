@@ -6,6 +6,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -25,13 +26,13 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 
 public class BeerMugBlock extends Block {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty AMOUNT = IntegerProperty.create("amount", 1, 3);
-
     protected static final VoxelShape[] SHAPE_BY_AMOUNT = new VoxelShape[]{
             Block.box(0, 0, 0, 16, 16, 16),
             Block.box(4, 0, 4, 12, 6, 12),
@@ -47,8 +48,8 @@ public class BeerMugBlock extends Block {
     }
 
     @Override
-    public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_, CollisionContext p_220053_4_) {
-        return SHAPE_BY_AMOUNT[p_220053_1_.getValue(AMOUNT)];
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return SHAPE_BY_AMOUNT[state.getValue(AMOUNT)];
     }
 
     @Override
@@ -63,18 +64,37 @@ public class BeerMugBlock extends Block {
     }
 
     @Override
-    public BlockState updateShape(BlockState p_196271_1_, Direction p_196271_2_, BlockState p_196271_3_, LevelAccessor p_196271_4_, BlockPos p_196271_5_, BlockPos p_196271_6_) {
-        return p_196271_2_ == Direction.DOWN && !p_196271_1_.canSurvive(p_196271_4_, p_196271_5_) ? Blocks.AIR.defaultBlockState() : super.updateShape(p_196271_1_, p_196271_2_, p_196271_3_, p_196271_4_, p_196271_5_, p_196271_6_);
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        return direction == Direction.DOWN && !state.canSurvive(level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hitResult) {
+        ItemStack takeBackBeer = state.getBlock().asItem().getDefaultInstance();
+        ItemHandlerHelper.giveItemToPlayer(player, takeBackBeer);
+        int amount = state.getValue(AMOUNT);
+        switch (amount) {
+            case 3:
+            case 2:
+                world.setBlockAndUpdate(pos, state.getBlock().defaultBlockState().setValue(AMOUNT, amount - 1).setValue(FACING, state.getValue(FACING)));
+                world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.AMBIENT, 0.5f, 0.5f);
+                return InteractionResult.sidedSuccess(world.isClientSide);
+            case 1:
+                world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.AMBIENT, 0.5f, 0.5f);
+                return InteractionResult.sidedSuccess(world.isClientSide);
+            default: {
+                return InteractionResult.FAIL;
+            }
+        }
+    }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         ItemStack itemStack = player.getItemInHand(hand);
         // Placing Beer
         if (itemStack.getItem().asItem() == state.getBlock().asItem()) {
-            if (world != null && world.isClientSide()) {
-                return InteractionResult.SUCCESS;
-            } else if (world != null) {
+            if (world.isClientSide()) {
                 int amount = state.getValue(AMOUNT);
                 int mugInHandCount = player.getItemInHand(hand).getCount();
                 boolean isCreative = player.isCreative();
@@ -85,7 +105,7 @@ public class BeerMugBlock extends Block {
                             player.getItemInHand(hand).setCount(mugInHandCount - 1);
                         }
                         world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                        return InteractionResult.CONSUME;
+                        return ItemInteractionResult.sidedSuccess(world.isClientSide);
                     }
                     case 2: {
                         world.setBlockAndUpdate(pos, state.getBlock().defaultBlockState().setValue(AMOUNT, 3).setValue(FACING, state.getValue(FACING)));
@@ -93,46 +113,21 @@ public class BeerMugBlock extends Block {
                             player.getItemInHand(hand).setCount(mugInHandCount - 1);
                         }
                         world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 1f, 1f);
-                        return InteractionResult.CONSUME;
+                        return ItemInteractionResult.sidedSuccess(world.isClientSide);
                     }
                     default: {
-                        return InteractionResult.FAIL;
-                    }
-                }
-            } else {
-                return InteractionResult.FAIL;
-            }
-        }
-        // Retrieve Beer
-        else if (itemStack.isEmpty()) {
-            if (world.isClientSide()) {
-                return InteractionResult.SUCCESS;
-            } else {
-                ItemStack takeBackBeer = state.getBlock().asItem().getDefaultInstance();
-                ItemHandlerHelper.giveItemToPlayer(player, takeBackBeer);
-                int amount = state.getValue(AMOUNT);
-                switch (amount) {
-                    case 3:
-                    case 2:
-                        world.setBlockAndUpdate(pos, state.getBlock().defaultBlockState().setValue(AMOUNT, amount - 1).setValue(FACING, state.getValue(FACING)));
-                        world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.AMBIENT, 0.5f, 0.5f);
-                        return InteractionResult.CONSUME;
-                    case 1:
-                        world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-                        world.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.AMBIENT, 0.5f, 0.5f);
-                        return InteractionResult.CONSUME;
-                    default: {
-                        return InteractionResult.FAIL;
+                        return ItemInteractionResult.FAIL;
                     }
                 }
             }
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
     }
 
+
     @Override
-    public boolean canSurvive(BlockState p_196260_1_, LevelReader p_196260_2_, BlockPos p_196260_3_) {
-        if (p_196260_2_.getBlockState(p_196260_3_.below()).getBlock() instanceof BeerMugBlock) return false;
-        return Block.canSupportCenter(p_196260_2_, p_196260_3_.below(), Direction.UP);
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        if (level.getBlockState(pos.below()).getBlock() instanceof BeerMugBlock) return false;
+        return Block.canSupportCenter(level, pos.below(), Direction.UP);
     }
 }

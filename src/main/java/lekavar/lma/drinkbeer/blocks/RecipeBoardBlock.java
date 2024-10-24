@@ -47,8 +47,8 @@ public class RecipeBoardBlock extends Block {
     }
 
     @Override
-    public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_, CollisionContext p_220053_4_) {
-        Direction dir = p_220053_1_.getValue(FACING);
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        Direction dir = state.getValue(FACING);
         switch (dir) {
             case NORTH:
                 return NORTH_SHAPE;

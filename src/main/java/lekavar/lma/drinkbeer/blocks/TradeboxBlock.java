@@ -1,5 +1,6 @@
 package lekavar.lma.drinkbeer.blocks;
 
+import com.mojang.serialization.MapCodec;
 import lekavar.lma.drinkbeer.blockentities.TradeBoxBlockEntity;
 import lekavar.lma.drinkbeer.managers.TradeBoxManager;
 import lekavar.lma.drinkbeer.registries.SoundEventRegistry;
@@ -32,9 +33,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class TradeboxBlock extends BaseEntityBlock {
+    public static final MapCodec<TradeboxBlock> CODEC = simpleCodec(pro->new TradeboxBlock());
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-
-    public final static VoxelShape SHAPE = Block.box(0, 0.01, 0, 16, 16, 16);
+    public static final VoxelShape SHAPE = Block.box(0, 0.01, 0, 16, 16, 16);
 
     public TradeboxBlock() {
         super(Properties.of().ignitedByLava().mapColor(MapColor.WOOD).strength(2.0f).noOcclusion());
@@ -43,7 +44,7 @@ public class TradeboxBlock extends BaseEntityBlock {
     }
 
     @Override
-    public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_, CollisionContext p_220053_4_) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
@@ -56,21 +57,6 @@ public class TradeboxBlock extends BaseEntityBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
-    }
-
-    @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!world.isClientSide) {
-            world.playSound(null, pos, SoundEventRegistry.TRADEBOX_OPEN.get(), SoundSource.BLOCKS, 0.6f, 1f);
-            BlockEntity blockentity = world.getBlockEntity(pos);
-
-            NetworkHooks.openScreen((ServerPlayer) player, (TradeBoxBlockEntity) blockentity, (FriendlyByteBuf packerBuffer) -> {
-                packerBuffer.writeBlockPos(blockentity.getBlockPos());
-            });
-
-            return InteractionResult.CONSUME;
-        }
-        return InteractionResult.sidedSuccess(world.isClientSide);
     }
 
     @Nullable
@@ -91,6 +77,23 @@ public class TradeboxBlock extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
         return new TradeBoxBlockEntity(TradeBoxManager.COOLING_TIME_ON_PLACE, blockPos, blockState);
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!level.isClientSide) {
+            level.playSound(null, pos, SoundEventRegistry.TRADEBOX_OPEN.get(), SoundSource.BLOCKS, 0.6f, 1f);
+            BlockEntity blockentity = level.getBlockEntity(pos);
+            player.openMenu((TradeBoxBlockEntity) blockentity, buf -> buf.writeBlockPos(blockentity.getBlockPos()));
+
+            return InteractionResult.CONSUME;
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override
