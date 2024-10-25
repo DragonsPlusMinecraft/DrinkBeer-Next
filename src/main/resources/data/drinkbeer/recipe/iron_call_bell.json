@@ -17,7 +17,7 @@
     }
   },
   "result": {
-    "item": "drinkbeer:iron_call_bell",
+    "id": "drinkbeer:iron_call_bell",
     "count":2
   }
 }

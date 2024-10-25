@@ -14,7 +14,7 @@
     }
   },
   "result": {
-    "item": "drinkbeer:beer_barrel",
+    "id": "drinkbeer:beer_barrel",
     "count":1
   }
 }

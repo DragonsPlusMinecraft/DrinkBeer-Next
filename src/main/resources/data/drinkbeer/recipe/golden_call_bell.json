@@ -17,7 +17,7 @@
     }
   },
   "result": {
-    "item": "drinkbeer:golden_call_bell",
+    "id": "drinkbeer:golden_call_bell",
     "count":2
   }
 }

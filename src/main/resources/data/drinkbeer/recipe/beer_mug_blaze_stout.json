@@ -6,7 +6,7 @@
         "item": "minecraft:wheat"
       },
       {
-        "tag": "forge:crops/wheat"
+        "tag": "c:crops/wheat"
       }
     ],
     [
@@ -14,7 +14,7 @@
         "item": "minecraft:wheat"
       },
       {
-        "tag": "forge:crops/wheat"
+        "tag": "c:crops/wheat"
       }
     ],
     {
@@ -25,12 +25,12 @@
     }
   ],
   "cup": {
-    "item": "drinkbeer:empty_beer_mug",
+    "id": "drinkbeer:empty_beer_mug",
     "count": 4
   },
   "brewing_time": 12000,
   "result": {
-    "item": "drinkbeer:beer_mug_blaze_stout",
+    "id": "drinkbeer:beer_mug_blaze_stout",
     "count": 4
   }
 }

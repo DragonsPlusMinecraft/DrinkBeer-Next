@@ -14,7 +14,7 @@
     }
   },
   "result": {
-    "item": "drinkbeer:empty_beer_mug",
+    "id": "drinkbeer:empty_beer_mug",
     "count":8
   }
 }

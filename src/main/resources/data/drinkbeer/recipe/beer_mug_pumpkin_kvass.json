@@ -15,12 +15,12 @@
     }
   ],
   "cup": {
-    "item": "drinkbeer:empty_beer_mug",
+    "id": "drinkbeer:empty_beer_mug",
     "count": 4
   },
   "brewing_time": 12000,
   "result": {
-    "item": "drinkbeer:beer_mug_pumpkin_kvass",
+    "id": "drinkbeer:beer_mug_pumpkin_kvass",
     "count": 4
   }
 }

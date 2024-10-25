@@ -14,7 +14,7 @@
     }
   },
   "result": {
-    "item": "drinkbeer:trade_box_normal",
+    "id": "drinkbeer:trade_box_normal",
     "count":1
   }
 }

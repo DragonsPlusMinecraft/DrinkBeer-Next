@@ -14,7 +14,7 @@
     }
   },
   "result": {
-    "item": "drinkbeer:bartending_table_normal",
+    "id": "drinkbeer:bartending_table_normal",
     "count":1
   }
 }
