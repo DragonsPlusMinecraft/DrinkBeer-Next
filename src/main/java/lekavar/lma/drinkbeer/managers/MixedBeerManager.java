@@ -2,8 +2,8 @@ package lekavar.lma.drinkbeer.managers;
 
 import lekavar.lma.drinkbeer.effects.DrunkStatusEffect;
 import lekavar.lma.drinkbeer.effects.NightHowlStatusEffect;
-import lekavar.lma.drinkbeer.registries.DamageRegistry;
 import lekavar.lma.drinkbeer.items.MixedBeerBlockItem;
+import lekavar.lma.drinkbeer.registries.DamageRegistry;
 import lekavar.lma.drinkbeer.registries.DataComponentTypeRegistry;
 import lekavar.lma.drinkbeer.registries.ItemRegistry;
 import lekavar.lma.drinkbeer.utils.beer.Beers;

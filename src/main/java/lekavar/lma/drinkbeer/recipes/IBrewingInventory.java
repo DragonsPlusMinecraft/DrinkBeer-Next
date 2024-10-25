@@ -1,6 +1,5 @@
 package lekavar.lma.drinkbeer.recipes;
 
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 
