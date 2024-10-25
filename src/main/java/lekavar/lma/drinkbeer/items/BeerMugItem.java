@@ -3,6 +3,7 @@ package lekavar.lma.drinkbeer.items;
 import lekavar.lma.drinkbeer.effects.DrunkStatusEffect;
 import lekavar.lma.drinkbeer.effects.NightHowlStatusEffect;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -47,17 +48,17 @@ public class BeerMugItem extends BeerBlockItem {
     }
 
     @Override
-    protected boolean canPlace(BlockPlaceContext p_195944_1_, BlockState p_195944_2_) {
-        if ((p_195944_1_.getClickLocation().distanceTo(p_195944_1_.getPlayer().position()) > MAX_PLACE_DISTANCE))
+    protected boolean canPlace(BlockPlaceContext context, BlockState state) {
+        if ((context.getClickLocation().distanceTo(context.getPlayer().position()) > MAX_PLACE_DISTANCE))
             return false;
         else {
-            return super.canPlace(p_195944_1_, p_195944_2_);
+            return super.canPlace(context, state);
         }
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        String name = this.asItem().toString();
+        String name = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
         if (hasEffectNoticeTooltip()) {
             tooltipComponents.add(Component.translatable("item.drinkbeer." + name + ".tooltip").setStyle(Style.EMPTY.applyFormat(ChatFormatting.BLUE)));
         }

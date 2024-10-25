@@ -21,8 +21,6 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 public class BrewingRecipe implements Recipe<IBrewingInventory> {
-    public static final int INPUT_SIZE = 4;
-
     private final NonNullList<Ingredient> input;
     private final ItemStack cup;
     private final int brewingTime;

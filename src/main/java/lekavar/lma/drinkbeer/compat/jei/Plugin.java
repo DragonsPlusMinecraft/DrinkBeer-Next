@@ -4,6 +4,7 @@ import lekavar.lma.drinkbeer.DrinkBeer;
 import lekavar.lma.drinkbeer.gui.BeerBarrelMenu;
 import lekavar.lma.drinkbeer.gui.BeerBarrelScreen;
 import lekavar.lma.drinkbeer.registries.BlockRegistry;
+import lekavar.lma.drinkbeer.registries.MenuTypeRegistry;
 import lekavar.lma.drinkbeer.registries.RecipeRegistry;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -22,26 +23,26 @@ public class Plugin implements IModPlugin {
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
-        registration.addRecipeCategories(new JEIBrewingRecipe(registration.getJeiHelpers().getGuiHelper()));
+        registration.addRecipeCategories(new JEIBrewingRecipeCategory(registration.getJeiHelpers().getGuiHelper()));
     }
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        registration.addRecipes(JEIBrewingRecipe.TYPE, Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(RecipeRegistry.RECIPE_TYPE_BREWING.get()).stream().map(RecipeHolder::value).toList());
+        registration.addRecipes(JEIBrewingRecipeCategory.TYPE, Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(RecipeRegistry.RECIPE_TYPE_BREWING.get()).stream().map(RecipeHolder::value).toList());
     }
 
     @Override
     public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-        registration.addRecipeTransferHandler(BeerBarrelMenu.class, null, JEIBrewingRecipe.TYPE, 36, 4, 0, 36);
+        registration.addRecipeTransferHandler(BeerBarrelMenu.class, MenuTypeRegistry.beerBarrelContainer.get(), JEIBrewingRecipeCategory.TYPE, 36, 4, 0, 36);
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(BlockRegistry.BEER_BARREL.get()), JEIBrewingRecipe.TYPE);
+        registration.addRecipeCatalyst(new ItemStack(BlockRegistry.BEER_BARREL.get()), JEIBrewingRecipeCategory.TYPE);
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addRecipeClickArea(BeerBarrelScreen.class, 90, 31, 37, 22, JEIBrewingRecipe.TYPE);
+        registration.addRecipeClickArea(BeerBarrelScreen.class, 90, 31, 37, 22, JEIBrewingRecipeCategory.TYPE);
     }
 }

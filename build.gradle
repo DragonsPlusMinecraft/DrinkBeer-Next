@@ -173,7 +173,7 @@ publishMods {
     file = tasks.jar.archiveFile
     changelog = new File("changelog/${mod_version}.md").text
     version = mod_version
-    type = ALPHA
+    type = BETA
     displayName = "Drink Beer Refill ${mod_version} for ${minecraft_version}"
     modLoaders.add("neoforge")
 
